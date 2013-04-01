@@ -1,4 +1,8 @@
 MyPortfolio::Application.routes.draw do
+  get 'samples/etrade' => 'samples#etrade'  
+  get 'samples/jquery_plugin' => 'samples#jquery_plugin'
+  
+  
   # The priority is based upon order of creation:
   # first created -> highest priority.
 
