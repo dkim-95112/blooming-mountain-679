@@ -1,4 +1,5 @@
 MyPortfolio::Application.routes.draw do
+  get '/' => 'samples#etrade'
   get 'samples/etrade' => 'samples#etrade'  
   get 'samples/jquery_plugin' => 'samples#jquery_plugin'
   
