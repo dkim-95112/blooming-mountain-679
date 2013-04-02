@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>MyPortfolio</title>
+  <title>Portfolio</title>
   <%= stylesheet_link_tag    "application", :media => "all" %>
   <%= javascript_include_tag "application" %>
   <%= csrf_meta_tags %>
@@ -14,6 +14,19 @@
 
 <body style="background:#ddd; padding:15px 15px 30px">
 	<style>
+	ul#my-nav {padding:0; margin:0}
+	ul#my-nav li {display:inline; padding: 0 15px; border-left: 1px solid gray;}
+	</style>
+	<ul id="my-nav" style="list-style:none">
+		<li><%= link_to_unless_current("eTrade samples", { :action => "etrade" }) %></li>
+		<li><%= link_to_unless_current("jQuery plugin", { :action => "jquery_plugin" }) %></li>
+		<li><%= link_to_unless_current("movie database", { :action => "jquery_plugin" }) %></li>
+		<li><%= link_to_unless_current("Quartz Composer", { :action => "jquery_plugin" }) %></li>
+		<li><%= link_to_unless_current("webGL", { :action => "jquery_plugin" }) %></li>
+	</ul>
+	
+	
+	<style>
 	#my-page {
 		-moz-box-shadow: 1px 1px 3px 1px #b0b0b0;
 		-webkit-box-shadow: 1px 1px 3px 1px #b0b0b0;
@@ -23,11 +36,10 @@
 		-moz-border-radius: 10px;
 		border-radius: 10px;
 		
-		background:white; margin:0 auto; padding: 15px;
+		background:white; margin:10px auto; padding: 15px;
 	}
 	</style>
-	
-	<div id="my-page">	
+	<div id="my-page">
 		<%= yield %>
 	</div>
 

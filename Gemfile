@@ -44,3 +44,4 @@ gem 'jquery-rails'
 
 ###########
 gem 'thin'
+gem 'haml'
