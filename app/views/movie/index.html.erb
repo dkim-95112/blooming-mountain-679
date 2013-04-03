@@ -1,1 +1,60 @@
-hi world
+
+	
+<div style="padding-left:20px">
+	<ol id="my-movies" class="in-a-hole"></ol>
+
+	<ol id="my-cast" class="in-a-hole" style="margin-left:20px"></ol>
+</div>
+
+
+<style>
+.in-a-hole {
+	background: #ddd;
+	box-shadow: inset 1px 0px 2px 1px #bebebe;
+	border-radius: 10px;
+}
+ol.in-a-hole {
+	display: inline-block; vertical-align:top;
+	padding: 10px 15px 10px 30px;
+}
+</style>
+
+
+<script>
+$(document).ready(function(){
+	var movies = <%= raw(@movies.to_json) %>;
+	function update_movies(movies){
+		$('ol#my-movies').empty();
+		$.each(movies, function(i, movie){
+			var row = '<li><a href="javascript:void(0)" onclick="get_cast(' + movie.id + ')">' + movie.title + '</a></li>';
+			$('ol#my-movies').append(row);
+		})		
+	}
+	update_movies(movies);
+	
+
+	window.get_cast = function(movie_id){
+		var url = '/movie/' + movie_id + '/cast';
+		$('ol#my-cast').empty();
+		$.getJSON(url, function(cast, textStatus, jqXHR){
+			update_cast(cast);
+		})
+	}
+	
+	function update_cast(cast){
+		$.each(cast, function(i, actor){
+			var row = '<li><a href="javascript:void(0)" onclick="get_actor_movies(' + actor.id + ')">' + actor.name + '</a></li>';
+			$('ol#my-cast').append(row);
+		})		
+	}
+	window.get_actor_movies = function(actor_id){
+		var url = '/actor/' + actor_id + '/movies';
+		$.getJSON(url, function(movies, textStatus, jqXHR){
+			update_movies(movies);
+		})
+	}
+	
+	
+	$('ol#my-movies a').eq(0).trigger('click');  // default - click first movie
+})
+</script>

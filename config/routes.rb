@@ -7,7 +7,7 @@ MyPortfolio::Application.routes.draw do
   get 'moviedb' => 'movie#index'
   get 'all_movies'  => 'movie#all_movies'
   get 'all_actors'  => 'movie#all_actors'
-  get 'movie/:id/actors' => 'movie#cast'
+  get 'movie/:id/cast' => 'movie#cast'
   get 'actor/:id/movies' => 'movie#actor'
   
   
