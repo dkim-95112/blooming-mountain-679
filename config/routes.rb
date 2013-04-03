@@ -1,7 +1,14 @@
 MyPortfolio::Application.routes.draw do
-  get '/' => 'samples#etrade'
+  #root :to => 'samples#etrade'
+  
   get 'samples/etrade' => 'samples#etrade'  
   get 'samples/jquery_plugin' => 'samples#jquery_plugin'
+  
+  get 'moviedb' => 'movie#index'
+  get 'all_movies'  => 'movie#all_movies'
+  get 'all_actors'  => 'movie#all_actors'
+  get 'movie/:id/actors' => 'movie#cast'
+  get 'actor/:id/movies' => 'movie#actor'
   
   
   # The priority is based upon order of creation:

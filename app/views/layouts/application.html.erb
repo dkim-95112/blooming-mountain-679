@@ -18,11 +18,9 @@
 	ul#my-nav li {display:inline; padding: 0 15px; border-left: 1px solid gray;}
 	</style>
 	<ul id="my-nav" style="list-style:none">
-		<li><%= link_to_unless_current("eTrade samples", { :action => "etrade" }) %></li>
-		<li><%= link_to_unless_current("jQuery plugin", { :action => "jquery_plugin" }) %></li>
-		<li><%= link_to_unless_current("movie database", { :action => "jquery_plugin" }) %></li>
-		<li><%= link_to_unless_current("Quartz Composer", { :action => "jquery_plugin" }) %></li>
-		<li><%= link_to_unless_current("webGL", { :action => "jquery_plugin" }) %></li>
+		<li><%= link_to_unless_current("eTrade samples", { :controller => 'samples', :action => "etrade" }) %></li>
+		<li><%= link_to_unless_current("jQuery plugin", { :controller => 'samples', :action => "jquery_plugin" }) %></li>
+		<li><%= link_to_unless_current("movie database", { :controller => 'movie', :action => "index" }) %></li>
 	</ul>
 	
 	
@@ -37,6 +35,7 @@
 		border-radius: 10px;
 		
 		background:white; margin:10px auto; padding: 15px;
+		display:inline-block;
 	}
 	</style>
 	<div id="my-page">
