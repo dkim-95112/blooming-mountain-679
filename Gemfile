@@ -42,8 +42,7 @@ gem 'jquery-rails'
 group :development, :test do
   # To use debugger
   gem 'debugger'
-
-  gem 'thin'
 end
 
+gem 'thin'
 gem 'haml'
