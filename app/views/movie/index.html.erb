@@ -1,9 +1,7 @@
 
-	
 <div style="padding-left:20px">
-	<ol id="my-movies" class="in-a-hole"></ol>
-
-	<ol id="my-cast" class="in-a-hole" style="margin-left:20px"></ol>
+	<ol id="my-movie-list" class="in-a-hole"></ol>
+	<ol id="my-actor-list" class="in-a-hole" style="margin-left:20px"></ol>
 </div>
 
 
@@ -23,38 +21,57 @@ ol.in-a-hole {
 <script>
 $(document).ready(function(){
 	var movies = <%= raw(@movies.to_json) %>;
-	function update_movies(movies){
-		$('ol#my-movies').empty();
-		$.each(movies, function(i, movie){
-			var row = '<li><a href="javascript:void(0)" onclick="get_cast(' + movie.id + ')">' + movie.title + '</a></li>';
-			$('ol#my-movies').append(row);
-		})		
-	}
-	update_movies(movies);
-	
 
-	window.get_cast = function(movie_id){
-		var url = '/movie/' + movie_id + '/cast';
-		$('ol#my-cast').empty();
-		$.getJSON(url, function(cast, textStatus, jqXHR){
-			update_cast(cast);
-		})
-	}
-	
-	function update_cast(cast){
-		$.each(cast, function(i, actor){
-			var row = '<li><a href="javascript:void(0)" onclick="get_actor_movies(' + actor.id + ')">' + actor.name + '</a></li>';
-			$('ol#my-cast').append(row);
+	function update_movie_list(movies){
+		$('ol#my-movie-list').empty();
+		$.each(movies, function(i, movie){
+			var row = '<li id="' + movie.id + '"><a href="javascript:void(0)" onclick="select_movie(this)"><span>' + movie.title + '</span></a></li>';
+			$('ol#my-movie-list').append(row);
 		})		
 	}
-	window.get_actor_movies = function(actor_id){
-		var url = '/actor/' + actor_id + '/movies';
-		$.getJSON(url, function(movies, textStatus, jqXHR){
-			update_movies(movies);
+	function update_actor_list(cast){
+		$('ol#my-actor-list').empty();
+		$.each(cast, function(i, actor){
+			var row = '<li id="' + actor.id + '"><a href="javascript:void(0)" onclick="select_actor(this)"><span>' + actor.name + '</span></a></li>';
+			$('ol#my-actor-list').append(row);
+		})		
+	}
+
+	window.select_movie = function(el){
+		var movie_id = el.parentElement.id;
+		var url = '/movie/' + movie_id + '/actor_list';
+		$.getJSON(url, function(actors, textStatus, jqXHR){
+			update_actor_list(actors);
 		})
+		
+		$('ol#my-movie-list li').each(function(i, v){
+			var $v = $(v), $label = $v.find('span');
+			if($v.find('a').length){
+				v.id == movie_id &&	$label.unwrap();
+			} else {
+				v.id == movie_id || $label.wrap('<a href="javascript:void(0)" onclick="select_movie(this)">');
+			}
+		});
+	}
+	window.select_actor = function(el){
+		var actor_id = el.parentElement.id;
+		var url = '/actor/' + actor_id + '/movie_list';
+		$.getJSON(url, function(movies, textStatus, jqXHR){
+			update_movie_list(movies);
+		})
+
+		$('ol#my-actor-list li').each(function(i, v){
+			var $v = $(v), $label = $v.find('span');
+			if($v.find('a').length){
+				v.id == actor_id &&	$label.unwrap();
+			} else {
+				v.id == actor_id || $label.wrap('<a href="javascript:void(0)" onclick="select_actor(this)">');
+			}
+		});
 	}
 	
 	
-	$('ol#my-movies a').eq(0).trigger('click');  // default - click first movie
+	update_movie_list(movies);
+	$('ol#my-movie-list a').eq(0).trigger('click');  // default - click first movie
 })
 </script>

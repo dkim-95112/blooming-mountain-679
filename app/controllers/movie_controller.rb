@@ -24,7 +24,7 @@ class MovieController < ApplicationController
     end
   end
     
-  def cast
+  def actor_list
     @actors = Actor.joins(:casts).where(["movie_id=?", params[:id]])
 
     respond_to do |format|
@@ -32,7 +32,7 @@ class MovieController < ApplicationController
     end
   end
   
-  def actor
+  def movie_list
     @movies = Movie.joins(:casts).where(["actor_id=?", params[:id]])
 
     respond_to do |format|
