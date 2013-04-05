@@ -10,14 +10,15 @@
 }
 </style>
 
-<header>
-	<h1 style="margin:10px 0">Charting Demo</h1>
-	<p>svg, raphael.js, jquery, ajax, html5, css3, javascript</p>
+<header style="padding-bottom: 10px; margin-bottom: 10px;">
+	<h1 style="margin-bottom: 10px;">Charting Demo</h1>
+	<span>svg, raphael.js, jquery, ajax, html5, css3, javascript</span>
 </header>
-<hr>
-<div id="chart-container" style="position:static; height:300px"></div>
-<hr>
-<footer>some footer text</footer>
+
+<div id="chart-container" style="position:static; height:300px; border-top: 1px solid rgb(210,210,210); border-bottom: 1px solid rgb(210,210,210)"></div>
+
+<footer style="margin-top: 10px;">some footer text</footer>
+
 
 <script>
 $(document).ready(function(){
@@ -39,7 +40,7 @@ $(document).ready(function(){
 			}
 			
 			$(rline.canvas).empty();
-			rline.linechart(50, 10, 400, 200, time, [large, medium, small], 
+			rline.linechart(50, 20, 400, 200, time, [large, medium, small], 
 				{colors:['orange', 'green', 'blue'], axis:'0 0 1 1'}
 			);
 
@@ -57,7 +58,7 @@ $(document).ready(function(){
 	var update_pie = function(){
 		$.getJSON('/foo/time_series', function(v){
 			$(rpie.canvas).empty();
-			rpie.piechart(200, 110, 100,
+			rpie.piechart(200, 130, 100,
 				[v.large, v.medium, v.small],
 				{colors:['orange','green','blue'], matchColors:true}
 			);

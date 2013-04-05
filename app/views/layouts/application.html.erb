@@ -1,29 +1,27 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Portfolio</title>
-  <%= stylesheet_link_tag    "application", :media => "all" %>
-  <%= javascript_include_tag "application" %>
-  <%= csrf_meta_tags %>
+	<title>Portfolio</title>
+	<%= stylesheet_link_tag    "application", :media => "all" %>
+	<%= javascript_include_tag "application" %>
+	<%= csrf_meta_tags %>
 
-  <style type="text/css" media="screen">
-  h3 {margin:0;}
-  </style>
+	<style type="text/css" media="screen">
+	h1, h3 {margin:0}
+	</style>
 </head>
 
 
-<body style="background:#ddd; padding:15px 15px 30px">
-	<style>
-	ul#my-nav {padding:0; margin:0}
-	ul#my-nav li {display:inline; padding: 0 15px; border-left: 1px solid gray;}
-	</style>
-	<ul id="my-nav" style="list-style:none">
-		<li><%= link_to_unless_current("etrade samples", { :controller => 'samples', :action => "etrade" }) %></li>
-		<li><%= link_to_unless_current("charting demos", { :controller => 'foo', :action => "charting_demo" }) %></li>
-		<li><%= link_to_unless_current("jquery plugin", { :controller => 'samples', :action => "jquery_plugin" }) %></li>
-		<li><%= link_to_unless_current("movie database", { :controller => 'movie', :action => "index" }) %></li>
-	</ul>
-	
+<body style="background:#ddd; padding:10px 10px 30px">
+	<nav style="float:left; margin-right:20px">
+		<h1 style="border-bottom:1px solid rgb(172,172,172); margin-bottom:10px">Portfolio</h1>
+		<ol id="my-nav" style="font-size:20px; margin:0; padding:0 0 0 25px">
+			<li><%= link_to_unless_current("etrade samples", { :controller => 'samples', :action => "etrade" }) %></li>
+			<li><%= link_to_unless_current("charting demos", { :controller => 'foo', :action => "charting_demo" }) %></li>
+			<li><%= link_to_unless_current("jquery plugin", { :controller => 'samples', :action => "jquery_plugin" }) %></li>
+			<li><%= link_to_unless_current("movie database", { :controller => 'movie', :action => "index" }) %></li>
+		</ol>
+	</nav>
 	
 	<style>
 	#my-page {
@@ -35,7 +33,7 @@
 		-moz-border-radius: 10px;
 		border-radius: 10px;
 		
-		background:white; margin:10px auto; padding: 15px;
+		background:white; padding: 15px;
 		display:inline-block;
 	}
 	</style>
