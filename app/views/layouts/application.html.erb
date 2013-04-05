@@ -12,15 +12,15 @@
 </head>
 
 
-<body style="background:#ddd; padding:10px 10px 30px; width:970px">
+<body style="background:#ddd; padding:10px 10px 30px; width:960px">
 	<nav style="float:left; margin-right:15px">
 		<h1 style="border-bottom:1px solid rgb(172,172,172); margin-bottom:10px">Portfolio</h1>
-		<ol id="my-nav" style="font-size:20px; margin:0; padding:0 0 0 25px">
+		<ul id="my-nav" style="font-size:20px; list-style:none; margin:0; padding:0">
 			<li><%= link_to_unless_current("etrade samples", { :controller => 'samples', :action => "etrade" }) %></li>
 			<li><%= link_to_unless_current("charting demos", { :controller => 'foo', :action => "charting_demo" }) %></li>
 			<li><%= link_to_unless_current("jquery plugin", { :controller => 'samples', :action => "jquery_plugin" }) %></li>
 			<li><%= link_to_unless_current("movie database", { :controller => 'movie', :action => "index" }) %></li>
-		</ol>
+		</ul>
 	</nav>
 	
 	<style>
