@@ -7,7 +7,7 @@ MyPortfolio::Application.routes.draw do
   get 'samples/etrade' => 'samples#etrade'  
   get 'samples/jquery_plugin' => 'samples#jquery_plugin'
   
-  get 'moviedb' => 'movie#index'
+  get 'moviedb' => 'movie#moviedb'
   get 'all_movies'  => 'movie#all_movies'
   get 'all_actors'  => 'movie#all_actors'
   get 'movie/:id/actor_list' => 'movie#actor_list'
