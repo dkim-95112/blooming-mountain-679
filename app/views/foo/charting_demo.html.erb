@@ -24,7 +24,7 @@
 $(document).ready(function(){
 	
 	var time = [], large = [], medium = [], small = [];
-	var rline = Raphael(0, 0, 500, 300);
+	var rline = Raphael(0, 0, 450, 300);
 	$(rline.canvas).attr({id: 'line-chart'}).css({position:'relative'}).appendTo('#chart-container');
 	var update_line = function(){
 		$.getJSON('/foo/time_series', function(v){
@@ -40,7 +40,7 @@ $(document).ready(function(){
 			}
 			
 			$(rline.canvas).empty();
-			rline.linechart(50, 20, 400, 200, time, [large, medium, small], 
+			rline.linechart(20, 20, 400, 200, time, [large, medium, small], 
 				{colors:['orange', 'green', 'blue'], axis:'0 0 1 1'}
 			);
 
@@ -53,17 +53,17 @@ $(document).ready(function(){
 	update_line();
 	
 	
-	var rpie = Raphael(0, 0, 400, 300);
+	var rpie = Raphael(0, 0, 300, 300);
 	$(rpie.canvas).attr({id: 'pie-chart'}).css({position:'relative'}).appendTo('#chart-container');
 	var update_pie = function(){
 		$.getJSON('/foo/time_series', function(v){
 			$(rpie.canvas).empty();
-			rpie.piechart(200, 130, 100,
+			rpie.piechart(150, 130, 100,
 				[v.large, v.medium, v.small],
 				{colors:['orange','green','blue'], matchColors:true}
 			);
 
-			var my_text = rpie.text(200, 270, 'more svg text');
+			var my_text = rpie.text(150, 270, 'more svg text');
 			$(my_text[0]).css({'font-size': '14px'});
 			
 			setTimeout(update_pie, 1000);
