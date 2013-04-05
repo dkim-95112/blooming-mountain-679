@@ -18,8 +18,9 @@
 	ul#my-nav li {display:inline; padding: 0 15px; border-left: 1px solid gray;}
 	</style>
 	<ul id="my-nav" style="list-style:none">
-		<li><%= link_to_unless_current("eTrade samples", { :controller => 'samples', :action => "etrade" }) %></li>
-		<li><%= link_to_unless_current("jQuery plugin", { :controller => 'samples', :action => "jquery_plugin" }) %></li>
+		<li><%= link_to_unless_current("etrade samples", { :controller => 'samples', :action => "etrade" }) %></li>
+		<li><%= link_to_unless_current("charting demos", { :controller => 'foo', :action => "charting_demo" }) %></li>
+		<li><%= link_to_unless_current("jquery plugin", { :controller => 'samples', :action => "jquery_plugin" }) %></li>
 		<li><%= link_to_unless_current("movie database", { :controller => 'movie', :action => "index" }) %></li>
 	</ul>
 	

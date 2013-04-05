@@ -1,0 +1,73 @@
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
+<%= javascript_include_tag 'raphael-min.js'%>
+<%= javascript_include_tag 'g.raphael-min.js'%>
+<%= javascript_include_tag 'g.pie-min.js'%>
+<%= javascript_include_tag 'g.line-min.js'%>
+
+<style>
+#line-chart {
+	border-right: 3px solid #e0e0e0;
+}
+</style>
+
+<header>
+	<h1 style="margin:10px 0">Charting Demo</h1>
+	<p>svg, raphael.js, jquery, ajax, html5, css3, javascript</p>
+</header>
+<hr>
+<div id="chart-container" style="position:static; height:300px"></div>
+<hr>
+<footer>some footer text</footer>
+
+<script>
+$(document).ready(function(){
+	
+	var time = [], large = [], medium = [], small = [];
+	var rline = Raphael(0, 0, 500, 300);
+	$(rline.canvas).attr({id: 'line-chart'}).css({position:'relative'}).appendTo('#chart-container');
+	var update_line = function(){
+		$.getJSON('/foo/time_series', function(v){
+			time.push(v.time);
+			large.push(v.large);
+			medium.push(v.medium);
+			small.push(v.small);
+			if(time.length > 30){
+				time.shift();
+				large.shift();
+				medium.shift();
+				small.shift();
+			}
+			
+			$(rline.canvas).empty();
+			rline.linechart(50, 10, 400, 200, time, [large, medium, small], 
+				{colors:['orange', 'green', 'blue'], axis:'0 0 1 1'}
+			);
+
+			var my_text = rline.text(200, 270, 'some svg text');
+			$(my_text[0]).css({'font-size': '14px'});
+
+			setTimeout(update_line, 1000);
+		})
+	};
+	update_line();
+	
+	
+	var rpie = Raphael(0, 0, 400, 300);
+	$(rpie.canvas).attr({id: 'pie-chart'}).css({position:'relative'}).appendTo('#chart-container');
+	var update_pie = function(){
+		$.getJSON('/foo/time_series', function(v){
+			$(rpie.canvas).empty();
+			rpie.piechart(200, 110, 100,
+				[v.large, v.medium, v.small],
+				{colors:['orange','green','blue'], matchColors:true}
+			);
+
+			var my_text = rpie.text(200, 270, 'more svg text');
+			$(my_text[0]).css({'font-size': '14px'});
+			
+			setTimeout(update_pie, 1000);
+		})
+	};
+	update_pie();
+})
+</script>

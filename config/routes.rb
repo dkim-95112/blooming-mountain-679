@@ -1,6 +1,9 @@
 MyPortfolio::Application.routes.draw do
   root :to => 'samples#etrade'
   
+  get 'foo/time_series' => 'foo#time_series'
+  get 'foo/charting_demo' => 'foo#charting_demo'
+  
   get 'samples/etrade' => 'samples#etrade'  
   get 'samples/jquery_plugin' => 'samples#jquery_plugin'
   
