@@ -20,6 +20,7 @@
 			<li><%= link_to_unless_current("chart demos", { :controller => 'foo', :action => "charting_demo" }) %></li>
 			<li><%= link_to_unless_current("jquery plugin", { :controller => 'samples', :action => "jquery_plugin" }) %></li>
 			<li><%= link_to_unless_current("movie database", { :controller => 'movie', :action => "moviedb" }) %></li>
+			<li><%= link_to_unless_current("quartz composer", { :controller => 'samples', :action => "quartz_composer" }) %></li>
 		</ul>
 	</nav>
 	
@@ -36,6 +37,7 @@
 		
 		background:white; padding: 15px;
 		display:inline-block;
+		width:760px;
 	}
 	</style>
 	<div id="my-page">
@@ -43,8 +45,8 @@
 	</div>
 
 
-	<footer style="margin-top: 20px;padding-top:10px; border-top: 3px solid rgb(197, 197, 197);">
-		You can get a clone of the rails code by typing at the $ prompt:<br>
+	<footer style="font-size:13px; margin-top: 20px;padding-top:10px; border-top: 3px solid rgb(197, 197, 197);">
+		You can get a clone of the rails code:<br>
 		<code>$ git clone git@heroku.com:blooming-mountain-679.git</code>
 	</footer>
 </body>

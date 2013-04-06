@@ -11,4 +11,7 @@ class SamplesController < ApplicationController
   def jquery_plugin
   end
 
+  def quartz_composer
+  end
+
 end

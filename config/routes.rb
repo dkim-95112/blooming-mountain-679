@@ -6,6 +6,7 @@ MyPortfolio::Application.routes.draw do
   
   get 'samples/etrade' => 'samples#etrade'  
   get 'samples/jquery_plugin' => 'samples#jquery_plugin'
+  get 'samples/quartz_composer' => 'samples#quartz_composer'
   
   get 'moviedb' => 'movie#moviedb'
   get 'all_movies'  => 'movie#all_movies'
