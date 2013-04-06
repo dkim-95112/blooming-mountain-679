@@ -1,5 +1,5 @@
-%header{:style => "padding-bottom: 10px; margin-bottom: 10px;"}
-	%h1{:style => "margin-bottom: 10px;"}Quartz Composition - Ot Ways
+%header{:style => "padding-bottom: 20px; border-bottom: 1px solid rgb(223, 223, 223)"}
+	%h1{:style => "margin-bottom: 10px;"}Quartz Composition - Ots Way
 	%span haml / sass / Quartz Composer / quicktime / 3d / perspective / language
 
 %style
@@ -10,13 +10,15 @@
 			margin-left: auto
 			margin-right: auto
 
-%section#my-interactive-quartz-composition
-	#my-download
-		%a(href="/my%20digital%20lexicon.qtz")="Download"
-	%p="Requires MacOSX 10.4 or later"
+%section#my-interactive-quartz-composition{:style => 'margin-top:20px'}
+	%a(href="/assets/samples/otsway/my digital lexicon.qtz")
+		Download the .qtz file
+	%span{:style => 'margin-left: 10px'}
+		[Requires MacOSX 10.4 or later]
 	
-=link_to_function "quicktime movie", "$('#my-quicktime-movie').toggle()"
-%section#my-quicktime-movie
+%h3{:style => 'margin-top:20px'}
+	Quicktime Movie
+%section#my-quicktime-movie{:style => 'border: 1px solid rgb(230, 230, 230)'}
 	=javascript_include_tag "http://www.apple.com/library/quicktime/scripts/ac_quicktime.js"
 	=javascript_include_tag "http://www.apple.com/library/quicktime/scripts/qtp_library.js"
 	=stylesheet_link_tag "http://www.apple.com/library/quicktime/stylesheets/qtp_library.css"
@@ -35,14 +37,17 @@
 		#my-still-images img
 			width: 620px
 			height: 256px
-=link_to_function "[ still images ]", "$('#my-still-images').toggle()"
-%section#my-still-images
-	%image(src="/ots%20way.0-9.png")/
-	%image(src="/ots%20way.u-z.png")/
-	%image(src="/ots%20way.k-t.png")/
-	%image(src="/ots%20way.a-j.png")/
 
-=link_to_function "[ Quartz Composer Snapshots ]", "$('#my-quartz-composer-snapshots').toggle()"
+%h3{:style => 'margin-top:20px'}
+	Still Images
+%section#my-still-images
+	%image(src="/assets/samples/otsway/ots way.0-9.png")/
+	%image(src="/assets/samples/otsway/ots way.u-z.png")/
+	%image(src="/assets/samples/otsway/ots way.k-t.png")/
+	%image(src="/assets/samples/otsway/ots way.a-j.png")/
+
+%h3{:style => 'margin-top:20px'}
+	Quartz Composer Snapshot
 %section#my-quartz-composer-snapshots(style="overflow-x:scroll")
-	%image(src="/qc%20key%20queues.png")/
+	%image(src="/assets/samples/otsway/qc key queues.png")/
 
