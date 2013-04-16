@@ -1,4 +1,4 @@
-(function($){
+(function(){
   var thumb_handlers = {
  	load:function(){
  	  $(this).parent().trigger('on_load');  // bubble up
@@ -103,4 +103,4 @@
 	  duration:100,
 	},
   };
-})(jQuery);
+})();

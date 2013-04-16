@@ -10,13 +10,13 @@
 
 %div
 	=link_to_function "widget usage", "$('#my-widget-usage').toggle()"
-	#my-widget-usage(style="margin-left:2em")
+	#my-widget-usage
 		%pre= File.read("app/assets/javascripts/hover_panel_usage.js")
 
 
 %div
 	=link_to_function "widget source", "$('#my-widget-source').toggle()"
-	#my-widget-source(style="margin-left:4em;")
+	#my-widget-source
 		%pre= File.read("app/assets/javascripts/jquery.hover_panel.js")
 
 
