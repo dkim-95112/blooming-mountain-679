@@ -1,7 +1,7 @@
 
 <header style="padding-bottom: 10px; margin-bottom: 10px;">
 	<h1 style="margin-bottom: 10px;">Movie Database</h1>
-	<span>ruby / RoR / ActiveRecord / ActionController / sql / ajax / json / jquery</span>
+	<span>backbone.js / underscore.js / obect-oriented javascript / ajax / json / ruby rails</span>
 </header>
 
 <div id="my-app-view" style="border-top: 1px solid rgb(210,210,210);">
@@ -143,60 +143,5 @@ $(document).ready(function(){
 		return false;
 	}
 	$('#my-movie-list li a').eq(0).click();  // select first one
-	
-	
-	if(0){
-		var movies = <%= raw(@movies.to_json) %>;
-
-		function update_movie_list(movies){
-			$('ol#my-movie-list').empty();
-			$.each(movies, function(i, movie){
-				var row = '<li id="' + movie.id + '"><a href="javascript:void(0)" onclick="select_movie(this)"><span>' + movie.title + '</span></a></li>';
-				$('ol#my-movie-list').append(row);
-			})		
-		}
-		function update_actor_list(cast){
-			$('ol#my-actor-list').empty();
-			$.each(cast, function(i, actor){
-				var row = '<li id="' + actor.id + '"><a href="javascript:void(0)" onclick="select_actor(this)"><span>' + actor.name + '</span></a></li>';
-				$('ol#my-actor-list').append(row);
-			})		
-		}
-
-		window.select_movie = function(el){
-			var movie_id = el.parentElement.id;
-			var url = '/movie/' + movie_id + '/actor_list';
-			$.getJSON(url, function(actors, textStatus, jqXHR){
-				update_actor_list(actors);
-			})
-		
-			$('ol#my-movie-list li').each(function(i, v){
-				var $v = $(v), $label = $v.find('span');
-				if($v.find('a').length){
-					v.id == movie_id &&	$label.unwrap();
-				} else {
-					v.id == movie_id || $label.wrap('<a href="javascript:void(0)" onclick="select_movie(this)">');
-				}
-			});
-		}
-		window.select_actor = function(el){
-			var actor_id = el.parentElement.id;
-			var url = '/actor/' + actor_id + '/movie_list';
-			$.getJSON(url, function(movies, textStatus, jqXHR){
-				update_movie_list(movies);
-			})
-
-			$('ol#my-actor-list li').each(function(i, v){
-				var $v = $(v), $label = $v.find('span');
-				if($v.find('a').length){
-					v.id == actor_id &&	$label.unwrap();
-				} else {
-					v.id == actor_id || $label.wrap('<a href="javascript:void(0)" onclick="select_actor(this)">');
-				}
-			});
-		}
-		update_movie_list(movies);
-		$('ol#my-movie-list a').eq(0).trigger('click');  // default - click first movie
-	}
 })
 </script>
