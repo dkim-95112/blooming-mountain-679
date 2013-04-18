@@ -54,7 +54,6 @@
 <body>
 	<div id="my-page" style="width:930px; margin:20px auto 0">
 		<nav id="my-nav" style="padding:15px; position:fixed; background-color:white; margin-left:-18px">
-			<h1 style="border-bottom:3px solid rgb(226, 226, 226); margin-bottom:10px; background:url(/assets/test-logo.png) no-repeat; padding-left:41px; line-height:35px">Portfolio</h1>
 			<ul style="font-size:20px; list-style:none; margin:0; padding:0">
 				<li><%= link_to_unless_current("etrade samples", { :controller => 'samples', :action => "etrade" }) %></li>
 				<li><%= link_to_unless_current("raphael.js", { :controller => 'foo', :action => "charting_demo" }) %></li>
@@ -62,6 +61,17 @@
 				<li><%= link_to_unless_current("rails database", { :controller => 'movie', :action => "moviedb" }) %></li>
 				<li><%= link_to_unless_current("processing.js", { :controller => 'samples', :action => "ots_way" }) %></li>
 			</ul>
+			<style>
+			#nav-header {
+				border-top: 3px solid rgb(209, 209, 209);
+				margin-top: 15px;
+				background: url(/assets/test-logo.png) 0px 10px no-repeat;
+				padding: 10px 0 0 40px;
+				line-height: 35px;	
+			}
+			</style>
+			<h1 id="nav-header">Portfolio</h1>
+			<div>innerb@gmail.com</div>
 		</nav>
 		
 		<div style="margin-left:170px">
@@ -70,7 +80,7 @@
 
 		<footer style="font-size:13px; margin-top: 20px;padding-top:10px; border-top: 3px solid rgb(216, 216, 216);">
 			You can get a clone of the rails code by:<br>
-			<code>$ git clone git@heroku.com:blooming-mountain-679.git</code>
+			<code>$ git clone git@heroku.com:blooming-mountain-679.git</code><br>
 		</footer>
 	</div>
 	<div class="bottom-gradient"></div>
