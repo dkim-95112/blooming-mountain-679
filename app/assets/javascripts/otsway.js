@@ -146,7 +146,6 @@ $.fn.ot = function(){
 
 	p.setup();
 	$.each("hello world".split(""), function(i, v){
-		debugger
 		steps.push(v.charCodeAt());
 	})
 	return this;
