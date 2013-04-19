@@ -1,41 +1,55 @@
 
-<header style="padding-bottom: 10px; margin-bottom: 10px;">
-	<h1 style="margin-bottom: 10px;">Movie Database</h1>
-	<span>backbone.js / underscore.js / obect-oriented javascript / ajax / json / ruby rails</span>
+<header>
+	<h1>Movie Database</h1>
+	<h3>backbone.js / underscore.js / obect-oriented javascript / ajax / json / ruby rails</h3>
 </header>
 
-<div id="my-app-view" style="border-top: 1px solid rgb(210,210,210);">
-	<ol id="my-movie-list" class="in-a-hole"></ol>
-	<ol id="my-actor-list" class="in-a-hole" style="margin-left:20px"></ol>
-</div>
-
 <style>
-.in-a-hole {
-	background: #ddd;
-	box-shadow: inset 1px 0px 2px 1px #bebebe;
-	border-radius: 10px;
-}
-ol.in-a-hole {
+#my-app-view ol {
+	background:#eee;
 	display: inline-block; vertical-align:top;
 	padding: 10px 15px 10px 30px;
 }
 </style>
 
+<div id="my-app-view">
+	<ol id="my-movie-list"></ol>
+	<ol id="my-actor-list" style="margin-left:20px"></ol>
+</div>
+
+<a href="javascript:void(0)" onclick="toggle_my_source()">
+	javascript source
+</a>
+<pre id="my-javascript-source" style="background:#eee"></pre>
+<script>
+function toggle_my_source(){
+	var $target = $('#my-javascript-source');
+	var is_loaded = $target.text().length;
+	var is_visible = $target.filter(':visible').length;
+	if(is_loaded){
+		if(is_visible){
+			$target.hide();
+		} else {
+			$target.show();
+		}
+	} else {
+		var $source = $('#my-script-source');
+		var html = $source.html().replace(/\t/g, "    ");
+		$target.text(html);
+	}
+}
+</script>
+
 <%= javascript_include_tag "underscore" %>
 <%= javascript_include_tag "backbone" %>
-<script>
-$(document).ready(function(){
+<script id="my-script-source">
+(function(){
 	/*
-	regarding:
-	. templating
-	- in memory, .wrap() does not work
-	- that's what javascript/jquery is for
-	. oo
-	- object named 'child'
-	. events
-	- user interaction events - forget about it
-	. line count
-	- approx. 50 to 130
+	notes:
+	. in-memory/not-in-DOM .wrap() does not work
+	. object named 'child'
+	. collection-to-view events are more mappable than user-interaction-to-view
+	. line count approximately doubled, 50 to 100
 	*/
 	var movie_anchor_html = '<a href="javascript:void(0)" onclick="handleMovieClick(this)">';
 	var movie_view = Backbone.View.extend({
@@ -62,17 +76,11 @@ $(document).ready(function(){
 		el: $('#my-actor-list'),
 		initialize: function(models, options){
 			this.collection = new actor_collection(models, options);
-			this.listenTo(this.collection, 'all', function(eventName){
-			});
-			this.listenTo(this.collection, 'request', function(collection, xhr, options){
-			});	
 			this.listenTo(this.collection, 'add', function(model, collection, options){
 				this.addOne(model);
 			});
 			this.listenTo(this.collection, 'reset', function(collection, options){
 				this.$el.empty();
-			});
-			this.listenTo(this.collection, 'sync', function(collection, resp, options){
 			});
 		},
 		addOne: function(an_actor_model){
@@ -85,17 +93,11 @@ $(document).ready(function(){
 		el: $('#my-movie-list'),
 		initialize: function(models, options){
 			this.collection = new movie_collection(models, options);
-			this.listenTo(this.collection, 'all', function(){
-			}),
-			this.listenTo(this.collection, 'request', function(collection, xhr, options){
-			});	
 			this.listenTo(this.collection, 'add', function(model, collection, options){
 				this.addOne(model);
 			});
 			this.listenTo(this.collection, 'reset', function(collection, options){
 				this.$el.empty();
-			});
-			this.listenTo(this.collection, 'sync', function(collection, resp, options){
 			});
 			this.collection.each(this.addOne, this);
 		},
@@ -116,7 +118,8 @@ $(document).ready(function(){
 				options.$selected_li.addClass('selected').find('a').children().unwrap();
 				options.$selected_li.siblings().each(function(i, v){
 					var $li = $(v).removeClass('selected');
-					if(!$li.children('a').length){
+					var is_linked = $li.children('a').length;
+					if(!is_linked){
 						$li.children().wrap(movie_anchor_html);
 					}
 				})
@@ -134,7 +137,8 @@ $(document).ready(function(){
 				options.$selected_li.addClass('selected').find('a').children().unwrap();
 				options.$selected_li.siblings().each(function(i, v){
 					var $li = $(v).removeClass('selected');
-					if(!$li.children('a').length){
+					var is_linked = $li.children('a').length;
+					if(!is_linked){
 						$li.children().wrap(actor_anchor_html);
 					}
 				})
@@ -143,5 +147,5 @@ $(document).ready(function(){
 		return false;
 	}
 	$('#my-movie-list li a').eq(0).click();  // select first one
-})
+})()
 </script>

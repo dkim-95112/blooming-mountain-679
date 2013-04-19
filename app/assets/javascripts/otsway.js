@@ -15,7 +15,7 @@ $.fn.ot = function(){
 		b: "out all",
 		c: "turn out",
 		d: "out down",
-		e: "emerges",
+		e: "",
 		f: "a way far",
 		g: "out gravity",
 		h: "on all",
@@ -43,7 +43,7 @@ $.fn.ot = function(){
 	var line_height = 28;
 	var container_width = 300, container_height = 240;
 	var frame_rate = 10;
-	var lerp_amt = 1; // 0 (animating) to 1 (not animating)
+	var lerp_amt = 1; // 0 <= animating > 1 (not animating)
 	var target_top = 0, cur_top = 0;
 	var cur_code;
 	var steps = [];
@@ -76,12 +76,13 @@ $.fn.ot = function(){
 		pp.rect(0,0,container_width, container_height);
 		pp.fill(64);
 		$.each(l, function(i, v){
-			var x = l_width/2;
 			var line = cur_top - i;
 			var line_lerp = direction() * pp.lerp(0, 1, lerp_amt);
+			var x = l_width/2;
 			var y = container_height - (line + line_lerp - 0.5) * line_height;
 			var z = -(line + line_lerp - 0.5) * line_height/2;
-			pp.text(v + ' - ' + my_text[v], x, y, z);
+			var v_text = my_text[v];
+			pp.text(v + (v_text.length ? ' - ' : '') + my_text[v], x, y, z);
 		})	
 		pp.endDraw();
 		p.image(pp.get(), 0, 0);
@@ -90,16 +91,16 @@ $.fn.ot = function(){
 		if(lerp_amt < 1){ // animating
 			lerp_amt += 0.2;
 			my_animate(lerp_amt);
-		} else { // animation done
-			if(direction() === 0){
-			} else { // done animating
+		} else { // not animating
+			if(direction() === 0){ // wasn't moving
+			} else { // was moving
 				var old_direction = direction();
 				cur_top += old_direction;
 				cur_code = null;
-				if(old_direction < 0){ // backspacing
+				if(old_direction < 0){ // was backspacing
 					l.pop();
 					my_animate(0);
-				} else { // going forward
+				} else { // was going forward
 				}
 			}
 			if(cur_code){
@@ -107,7 +108,7 @@ $.fn.ot = function(){
 					if(target_top){
 						target_top--;
 						lerp_amt = 0;
-					} else {
+					} else { // at first line
 						cur_code = null; // just toss it
 					}
 				} else { // not backspace
@@ -123,8 +124,7 @@ $.fn.ot = function(){
 			} else { // no cur_code
 				if(steps.length){
 					cur_code = steps.shift();
-				} else {
-					// nothing to do
+				} else { // nothing to do
 				}
 			}
 		}

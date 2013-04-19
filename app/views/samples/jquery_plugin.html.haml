@@ -1,37 +1,33 @@
-%header{:style => "padding-bottom: 10px; margin-bottom: 10px;"}
-	%h1{:style => "margin-bottom: 10px;"}
-		jQuery Plugin
-	%span
-		haml / jquery
+%header
+	%h1
+		hover tiles
+	%h3
+		jQuery plugin
 	
 %div
 	=link_to_function "widget", "$('#my-widget').toggle()"
 	#my-widget{:style => "height:200px"}
 		%button{:style => "font-size:24px; margin:15px 0"}
-		%style
-			:plain
-				#my-hover-tiles .over img.helper{
-					z-index: 1;
-				}
+		:sass
+			#my-hover-tiles .over img.helper
+				:z-index 1
 		#my-hover-tiles{:style => "position:absolute"}
 
 %div
 	=link_to_function "widget usage", "$('#my-widget-usage').toggle()"
-	#my-widget-usage
-		%pre= File.read("app/assets/javascripts/hover_tiles_usage.js")
+	%pre#my-widget-usage{:style => "background:#eee"}
+		=File.read "app/assets/javascripts/hover_tiles_usage.js"
 
 %div
 	=link_to_function "widget source", "$('#my-widget-source').toggle()"
-	#my-widget-source
-		%pre= File.read("app/assets/javascripts/jquery.hover_tiles.js")
+	%pre#my-widget-source{:style => "background:#eee"}
+		=File.read "app/assets/javascripts/jquery.hover_tiles.js"
 
-%script
-	:plain
-		$('pre').each(function(){
-			var orig_html = this.innerHTML;
-			this.innerHTML = orig_html.replace(/\t/g, "    ");
-		});
-		
+:coffeescript
+	$('pre').each () ->
+		orig_html = this.innerHTML
+		this.innerHTML = orig_html.replace(/\t/g, "    ")
+	
 
 =javascript_include_tag "jquery.hover_tiles.js"
 =javascript_include_tag "hover_tiles_usage.js"

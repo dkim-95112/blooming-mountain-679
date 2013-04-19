@@ -1,29 +1,51 @@
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
-<%= javascript_include_tag 'raphael-min.js'%>
-<%= javascript_include_tag 'g.raphael-min.js'%>
-<%= javascript_include_tag 'g.pie-min.js'%>
-<%= javascript_include_tag 'g.line-min.js'%>
+<header>
+	<h1>Chart Demos</h1>
+	<h3>svg / raphael.js / jquery / ajax / html5 / css3 / javascript</h3>
+</header>
 
 <style>
 #line-chart {
 	border-right: 3px solid #e0e0e0;
 }
 </style>
+<div id="chart-container" style="position:static; height:300px;"></div>
 
-<header style="padding-bottom: 10px; margin-bottom: 10px;">
-	<h1 style="margin-bottom: 10px;">Chart Demos</h1>
-	<span>svg / raphael.js / jquery / ajax / html5 / css3 / javascript</span>
-</header>
-
-<div id="chart-container" style="position:static; height:300px; border-top: 1px solid rgb(210,210,210);"></div>
+<a href="javascript:void(0)" onclick="toggle_my_source()">
+	javascript source
+</a>
+<pre id="my-javascript-source" style="background:#eee"></pre>
 
 
+<%= javascript_include_tag 'raphael-min.js'%>
+<%= javascript_include_tag 'g.raphael-min.js'%>
+<%= javascript_include_tag 'g.pie-min.js'%>
+<%= javascript_include_tag 'g.line-min.js'%>
 <script>
+function toggle_my_source(){
+	var $target = $('#my-javascript-source');
+	var is_loaded = $target.text().length;
+	var is_visible = $target.filter(':visible').length;
+	if(is_loaded){
+		if(is_visible){
+			$target.hide();
+		} else {
+			$target.show();
+		}
+	} else {
+		var $source = $('#my-script-source');
+		var html = $source.html().replace(/\t/g, "    ");
+		$target.text(html);
+	}
+}
+</script>
+<script id="my-script-source">
 $(document).ready(function(){
 	
 	var time = [], large = [], medium = [], small = [];
 	var rline = Raphael(0, 0, 450, 300);
-	$(rline.canvas).attr({id: 'line-chart'}).css({position:'relative'}).appendTo('#chart-container');
+	$(rline.canvas).attr({id: 'line-chart'})
+	.css({position:'relative'})
+	.appendTo('#chart-container');
 	var update_line = function(){
 		$.getJSON('/foo/time_series', function(v){
 			time.push(v.time);
@@ -52,7 +74,9 @@ $(document).ready(function(){
 	
 	
 	var rpie = Raphael(0, 0, 250, 300);
-	$(rpie.canvas).attr({id: 'pie-chart'}).css({position:'relative'}).appendTo('#chart-container');
+	$(rpie.canvas).attr({id: 'pie-chart'})
+	.css({position:'relative'})
+	.appendTo('#chart-container');
 	var update_pie = function(){
 		$.getJSON('/foo/time_series', function(v){
 			$(rpie.canvas).empty();
