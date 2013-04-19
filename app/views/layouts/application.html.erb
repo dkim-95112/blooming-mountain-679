@@ -40,25 +40,21 @@
 	#my-page {
 		color: rgba(0,0,0,.78);
 		border:1px solid rgb(233, 233, 233);
-		
-		-webkit-border-radius: 3px;
-		-moz-border-radius: 3px;
-		border-radius: 3px;
-		
-		background:white; padding: 15px;
+		background:white;
+		padding: 15px;
 	}
 	</style>
 </head>
 
 
 <body>
-	<div id="my-page" style="width:900px; margin:20px auto 0">
-		<nav id="my-nav" style="padding:15px; position:fixed; background-color:white; margin-left:-18px">
+	<div id="my-page" style="width:900px; margin:30px auto 0">
+		<nav id="my-nav" style="padding:15px; position:fixed; background-color:white; margin-left:-18px; margin-top:-48px">
 			<ul style="font-size:20px; list-style:none; margin:0; padding:0">
 				<li><%= link_to_unless_current("etrade samples", { :controller => 'samples', :action => "etrade" }) %></li>
 				<li><%= link_to_unless_current("raphael.js", { :controller => 'foo', :action => "charting_demo" }) %></li>
 				<li><%= link_to_unless_current("jquery plugin", { :controller => 'samples', :action => "jquery_plugin" }) %></li>
-				<li><%= link_to_unless_current("rails database", { :controller => 'movie', :action => "moviedb" }) %></li>
+				<li><%= link_to_unless_current("backbone/rails", { :controller => 'movie', :action => "moviedb" }) %></li>
 				<li><%= link_to_unless_current("processing.js", { :controller => 'samples', :action => "ots_way" }) %></li>
 			</ul>
 			<style>
