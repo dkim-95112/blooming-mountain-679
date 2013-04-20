@@ -14,7 +14,7 @@
 		font-family:arial,sans-serif; color: rgba(0,0,0,.8);
 		margin:0;
 		position:relative;
-		padding-bottom: 30px;
+		padding: 15px 0 30px;
 	}
 	.bottom-gradient {
 		background-image: url(/assets/bottom-gradient.png);
@@ -24,6 +24,16 @@
 	}
 	h1, h3 {margin:0}
 
+	#my-page {
+		color: rgba(0,0,0,.78);
+		border-top:1px solid rgb(233, 233, 233);
+		border-right:1px solid rgb(233, 233, 233);
+		border-bottom:1px solid rgb(233, 233, 233);
+		background:white;
+		width:900px;
+		padding:15px;
+		margin: 0 auto;
+	}
 	#my-nav{
 		-moz-box-shadow: 0px -1px 4px 0px rgb(206, 206, 206);
 		-webkit-box-shadow: 0px -1px 4px 0px rgb(206, 206, 206);
@@ -33,23 +43,22 @@
 		-moz-border-radius: 0 3px 3px 0;
 		border-radius: 0 3px 3px 0;
 		
-		border-top:1px solid rgb(216, 216, 216);
+		border-top:1px solid rgb(230, 230, 230);
 		border-right:1px rgb(224, 224, 224);
 		border-bottom:1px solid rgb(224, 224, 224);
-	}
-	#my-page {
-		color: rgba(0,0,0,.78);
-		border:1px solid rgb(233, 233, 233);
-		background:white;
-		padding: 15px;
+		
+		position:fixed;
+		padding:15px;
+		background-color:white;
+		margin-left:-20px;
 	}
 	</style>
 </head>
 
 
 <body>
-	<div id="my-page" style="width:900px; margin:30px auto 0">
-		<nav id="my-nav" style="padding:15px; position:fixed; background-color:white; margin-left:-18px; margin-top:-48px">
+	<div id="my-page">
+		<nav id="my-nav">
 			<ul style="font-size:20px; list-style:none; margin:0; padding:0">
 				<li><%= link_to_unless_current("etrade samples", { :controller => 'samples', :action => "etrade" }) %></li>
 				<li><%= link_to_unless_current("raphael.js", { :controller => 'foo', :action => "charting_demo" }) %></li>
