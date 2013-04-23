@@ -15,12 +15,12 @@
 
 %div
 	=link_to_function "widget usage", "$('#my-widget-usage').toggle()"
-	%pre#my-widget-usage{:style => "background:#eee"}
+	%pre#my-widget-usage{:style => "background:#eee; overflow-x:scroll"}
 		=File.read "app/assets/javascripts/hover_tiles_usage.js"
 
 %div
 	=link_to_function "widget source", "$('#my-widget-source').toggle()"
-	%pre#my-widget-source{:style => "background:#eee"}
+	%pre#my-widget-source{:style => "background:#eee; overflow-x:scroll"}
 		=File.read "app/assets/javascripts/jquery.hover_tiles.js"
 
 :coffeescript
