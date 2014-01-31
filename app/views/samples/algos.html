@@ -10,11 +10,11 @@
 
   <ul id="myCanvasList">
     <li>1 of 3
-	  <canvas id="myCanvas0" width="800" height="600" style="background-color:#DCFFE0; padding:0 5px"></canvas>
+	  <canvas id="myCanvas0" width="400" height="300" style="background-color:#DCFFE0; padding:0 5px"></canvas>
     <li>2 of 3
-	  <canvas id="myCanvas1" width="800" height="600" style="background-color:#DCFFE0; padding:0 5px"></canvas>
+	  <canvas id="myCanvas1" width="400" height="300" style="background-color:#DCFFE0; padding:0 5px"></canvas>
     <li>3 of 3
-	  <canvas id="myCanvas2" width="800" height="600" style="background-color:#DCFFE0; padding:0 5px"></canvas>
+	  <canvas id="myCanvas2" width="400" height="300" style="background-color:#DCFFE0; padding:0 5px"></canvas>
   </ol>
 
 
@@ -143,6 +143,7 @@
 	function drawSorted ( elemId ) {
 		var c = document.getElementById ( elemId );
 		var ctx = c.getContext ( '2d' ) ;
+		ctx.scale ( 0.5 , 0.5 )
 		ctx.font = "20px Arial";
 		ctx.fillStyle = '#dcffe0';
 		ctx.fillRect ( 0 , 0 , 800 , 600 )
