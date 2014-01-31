@@ -43,10 +43,10 @@ $ ( document ) .ready ( function (
 				width : 40, position : 'relative', 'float' : 'none'
 			} ,
 			css_animate : {
-				over : {width : 122, left : 100 , top : '0px' },
-				left : {width : 66, left : 50 , top : '0px'},
-				right : {width : 66, left : 50 , top : '0px'},
-				other : {width : 40, left : '0px', top : '0px'},
+				over : {width : 122, left : 100 , top : 0 },
+				left : {width : 66, left : 50 , top : 0},
+				right : {width : 66, left : 50 , top : 0},
+				other : {width : 40, left : 0, top : 0},
 				duration :  100
 			}
 		})

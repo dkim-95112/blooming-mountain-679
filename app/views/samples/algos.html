@@ -1,0 +1,156 @@
+<header>
+	<h1>algorithms</h1>
+	<h3>no javascript libraries (pure javascript), html5 canvas, visualization</h3>
+</header>
+
+<style>
+	ul#myCanvasList li { vertical-align : top ; display : inline-block }
+</style>
+
+
+  <ul id="myCanvasList">
+    <li>1 of 3
+	  <canvas id="myCanvas0" width="800" height="600" style="background-color:#DCFFE0; padding:0 5px"></canvas>
+    <li>2 of 3
+	  <canvas id="myCanvas1" width="800" height="600" style="background-color:#DCFFE0; padding:0 5px"></canvas>
+    <li>3 of 3
+	  <canvas id="myCanvas2" width="800" height="600" style="background-color:#DCFFE0; padding:0 5px"></canvas>
+  </ol>
+
+
+<script>
+( function (
+) {
+	var o = {} // local space
+	var myOrders = {
+		1 : { packingStart : 224 , duration : 69 },
+		2 : { packingStart : 335 , duration : 91 },
+		3 : { packingStart : 23 , duration : 47 } ,
+		4 : { packingStart : 130 , duration : 52 },
+		5 : { packingStart : 5 , duration : 183 } ,
+		6 : { packingStart : 253 , duration : 71 } ,
+		7 : { packingStart : 41 , duration : 68 } 
+	}
+	var sorted = []
+	for ( var o1id in myOrders ) { // start each in own col
+		var r = {}
+		r [ o1id ] = myOrders [ o1id ]
+		sorted.push ( r )
+	}
+	function getBody ( a ) {
+		for ( var id in a ) {
+			return a [ id ]
+		}
+	}
+	function getId ( a ) {
+		for ( var id in a ) {
+			return id
+		}
+	}
+	sorted.sort ( function ( a , b ) {
+		var o1 = getBody ( a ) , o2 = getBody ( b )
+		return o1.packingStart === o2.packingStart ? (
+			o1.duration >= o2.duration // then by duration
+		) : (
+			o1.packingStart - o2.packingStart // by start
+		)
+	} ) ; // sort
+
+	// visualizing with tmp width first
+	var tmpWidth = 800 / sorted.length
+	for ( var i = 0 , currLeft = 0 ; i < sorted.length ; i++ , currLeft += tmpWidth ) {
+		var o1 = getBody ( sorted [ i ] )
+		o1.width = tmpWidth
+		o1.left = currLeft
+	}
+	drawSorted ( 'myCanvas0' )
+
+	function overlaps ( a , b ) {
+		var o1 = getBody ( a ) , o2 = getBody ( b )
+		function orderContains ( o1 , o2 ){
+			return (
+				o2.packingStart >= o1.packingStart &&
+					o2.packingStart <= o1.packingStart + o1.duration
+			) || (
+				o2.packingStart + o2.duration >= o1.packingStart &&
+					o2.packingStart + o2.duration <= o1.packingStart + o1.duration
+			)
+		} // orderContains
+
+		return orderContains ( o1 , o2 ) || orderContains ( o2 , o1 ) 
+	} // overlaps
+
+	// move leftmost
+	for ( var i = 1 ; i < sorted.length ; i++ ) { // comparing pairs
+		var a = sorted [ i - 1 ] , b = sorted [ i ]
+		if ( overlaps ( a , b ) ) {
+			( a.rows = a.rows || [] ) .push ( b )
+		} else {
+			for ( var j = i - 1 ; j > 0 ; j-- ) { // look back left
+				var a = sorted [ j - 1 ]
+				if ( overlaps ( a , b ) ) {
+					( a.rows = a.rows || [] ) .push ( b )
+				} else {
+					if ( j === 1 ) { // leftmost
+						getBody ( b ) .left = 0
+					}
+				} // if
+			} // for
+		} // if
+	} // for
+	drawSorted ( 'myCanvas1' )
+	
+	var col0 = sorted.filter ( function ( a ) { // filter leftmost
+		return getBody ( a ) .left === 0 ? a : false
+	} ) ;
+	function countCols ( a ) {
+		return a.rows ? (
+			( function ( ) {
+				a.colsByRow = a.rows.map ( function ( b ) {
+					return b.nCols = countCols ( b )
+				} ); // map
+				return 1 + Math.max.apply ( null , a.colsByRow ) // flatten
+			} ) ( )
+		) : (
+			1
+		)
+	} // countCols
+	col0.map ( function ( a ) { // set widths
+		a.nCols = countCols ( a )
+		var evenWidth = 800 / a.nCols
+		getBody ( a ) .width = evenWidth
+		setEvenWidths ( a , evenWidth , evenWidth )
+	} ) ;
+	drawSorted ( 'myCanvas2' )
+
+	function setEvenWidths ( a , left , evenWidth ) {
+		if ( a.rows ) {
+			a.rows.map ( function ( b , index ) {
+				var o2 = getBody ( b )
+				o2.left = left
+				o2.width = b.nCols === a.nCols - 1 ? ( // max cols
+					evenWidth
+				) : (
+					( 800 - left ) / b.nCols
+				)
+				setEvenWidths ( b , left + o2.width , o2.width )
+			} ) ; // map
+		} else {
+			getBody ( a ) .width = evenWidth
+		} // if
+	} // setWidths
+
+	function drawSorted ( elemId ) {
+		var c = document.getElementById ( elemId );
+		var ctx = c.getContext ( '2d' ) ;
+		ctx.font = "20px Arial";
+		ctx.fillStyle = '#dcffe0';
+		ctx.fillRect ( 0 , 0 , 800 , 600 )
+		for ( var i = 0 ; i < sorted.length ; i++ ) {
+			var a = sorted [ i ] , o1 = getBody ( a ) , o1id = getId ( a )
+			ctx.strokeRect ( o1.left , o1.packingStart , o1.width , o1.duration )
+			ctx.strokeText ( o1id , o1.left , o1.packingStart + 20 )
+		} // for
+	} // drawSorted
+} ) ( )
+</script>
