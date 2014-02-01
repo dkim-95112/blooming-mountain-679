@@ -11,4 +11,6 @@ class SamplesController < ApplicationController
   end
   def algos
   end
+  def vmware
+  end
 end

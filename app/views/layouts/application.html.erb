@@ -60,6 +60,7 @@
 	<div id="my-page">
 		<nav id="my-nav">
 			<ul style="font-size:20px; list-style:none; margin:0; padding:0">
+				<li><%= link_to_unless_current("vmware", { :controller => 'samples', :action => "vmware" }) %></li>
 				<li><%= link_to_unless_current("etrade samples", { :controller => 'samples', :action => "etrade" }) %></li>
 				<li><%= link_to_unless_current("raphael.js", { :controller => 'foo', :action => "charting_demo" }) %></li>
 				<li><%= link_to_unless_current("jquery plugin", { :controller => 'samples', :action => "jquery_plugin" }) %></li>
