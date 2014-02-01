@@ -1,5 +1,5 @@
 MyPortfolio::Application.routes.draw do
-  root :to => 'samples#etrade'
+  root :to => 'samples#vmware'
   
   get 'foo/time_series' => 'foo#time_series'
   get 'foo/charting_demo' => 'foo#charting_demo'
