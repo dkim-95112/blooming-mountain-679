@@ -3,6 +3,10 @@
 		Processing js - Ots Way
 	%h3
 		html5 / css3 / haml / sass / 3d / perspective / language
+
+#directions{:style=>"margin-top:10px"}
+	Type [a-z0-9] or space/backspace.
+
 :sass
 	canvas#my-id
 		:width 100%
@@ -11,8 +15,6 @@
 %canvas#my-id{:style => "margin-top:20px"}
 =link_to "javascript source", "/assets/otsway.js", :style => "margin-left:20px"
 
-#directions{:style=>"margin-top:10px"}
-	Type [a-z0-9] or space/backspace.
 	
 =javascript_include_tag 'processing-1.4.1.js'
 =javascript_include_tag "otsway.js"
