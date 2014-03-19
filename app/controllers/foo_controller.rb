@@ -11,5 +11,6 @@ class FooController < ApplicationController
   end
 
   def charting_demo
+    render :layout => false
   end
 end

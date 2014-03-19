@@ -1,5 +1,10 @@
 MyPortfolio::Application.routes.draw do
-  root :to => 'samples#vmware'
+  root :to => 'application#index'
+
+  get 'helloapp' => 'helloapp#index'
+
+  get 'samples/algos2' => 'samples#algos2'
+  get 'algos/sorted' => 'algos#sorted'
   
   get 'foo/time_series' => 'foo#time_series'
   get 'foo/charting_demo' => 'foo#charting_demo'

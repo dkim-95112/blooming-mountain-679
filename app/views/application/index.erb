@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Portfolio</title>
+	<%= stylesheet_link_tag    "application", :media => "all" %>
+	<%= javascript_include_tag "application" %>
+	<%= csrf_meta_tags %>
+
+	<style type="text/css" media="screen">
+	body {
+		font-family : arial , sans-serif ;
+		color: rgba(0,0,0,.9);
+		position: relative;
+		margin: 0;
+	}
+	h1, h3 {
+		 margin: 0
+	}
+	nav#main_menu {
+		color: white;
+		width: 100%;
+		opacity: 0.5;
+		background-color: black;
+	}
+	nav#main_menu > * {
+		display: inline-block;
+	}
+	nav#main_menu a {
+		color: white;
+		text-decoration: none;
+		text-shadow: 1px 1px rgba( 0, 0 , 0, 0.8);
+		padding: 5px 10px;
+		opacity: 0.9;
+		font-size: small;
+	}
+	nav#main_menu a:not(:first-child) {
+		border-left: 1px solid #eaeaea;
+		margin-left: -4px;
+	}
+	nav#main_menu a:hover {
+		opacity: 1;
+	}
+	nav#main_menu a.selected {
+		opacity: 0.5;
+	}
+ 	#left_top_background {
+		position: absolute;
+		width: 100%;
+		height: 1200px;
+		background: url(/assets/desktop2.jpg) no-repeat;
+		z-index: -1;
+		opacity: 0.45;
+	}
+	#bottom_repeating_background {
+		position: absolute;
+		background: url(/assets/desktop2bottom.jpg) repeat-y;
+		top: 1200px;
+		bottom: 0px;
+		width: 100%;
+		z-index: -1;
+		opacity: 0.43;
+	}
+ 	</style>
+</head>
+
+
+<body>
+	<div id="left_top_background"></div>
+	<div id="bottom_repeating_background"></div>
+
+	<nav id="main_menu">
+		<img src="/assets/test-logo.png" style="height:0.9em; width:1.5em; padding:0 5px;"/>
+		<a href="/samples/vmware">vmware</a>
+		<a href="/samples/etrade">etrade samples</a>
+		<a href="/foo/charting_demo">svg charts</a>
+		<a href="/samples/jquery_plugin">jquery plugin</a>
+		<a href="/moviedb">backbone moviedb</a>
+		<a href="/samples/ots_way">processing 3d canvas</a>
+		<a href="/samples/algos">algorithms</a>
+	</nav>
+
+	<div id="main_page" style="padding: 1em"></div>
+	
+</body>
+
+<script>
+var $my_nav = $( "nav#main_menu").on( 'click' , '> a' , function ( e ){
+		e.stopPropagation()
+		e.preventDefault();
+		var $a = $( this )
+		if ( $a.hasClass( 'selected' ) ){
+		} else {
+			$a.siblings( 'a' ).removeClass( 'selected').end()
+			$( '#main_page ').load ( $a.attr( 'href' ) )
+			$a.addClass( 'selected')
+		}
+	}
+).find( '> a' ).eq(0).click() // default top menu item
+
+</script>
+
+</html>

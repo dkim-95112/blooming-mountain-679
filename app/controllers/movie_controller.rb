@@ -2,15 +2,11 @@ class MovieController < ApplicationController
 
   def moviedb
     @movies = Movie.all
-    
-    respond_to do |format|
-      format.html  # => index.html.erb
-    end
+    render :layout => false
   end
   
   def all_movies
     @movies = Movie.all
-
     respond_to do |format|
       format.json { render :json => @movies }
     end
@@ -18,7 +14,6 @@ class MovieController < ApplicationController
 
   def all_actors
     @actors = Actor.all
-    
     respond_to do |format|
       format.json { render :json => @actors }
     end
@@ -26,7 +21,6 @@ class MovieController < ApplicationController
     
   def actor_list
     @actors = Actor.joins(:casts).where(["movie_id=?", params[:id]])
-
     respond_to do |format|
       format.json { render :json => @actors }
     end
