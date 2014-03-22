@@ -29,7 +29,7 @@
 		color: white;
 		text-decoration: none;
 		text-shadow: 1px 1px rgba( 0, 0 , 0, 0.8);
-		padding: 5px 10px;
+		padding: 10px;
 		opacity: 0.9;
 		font-size: small;
 	}
@@ -84,17 +84,72 @@
 </body>
 
 <script>
-var $my_nav = $( "nav#main_menu").on( 'click' , '> a' , function ( e ){
+
+var globals = window
+
+$.fn.vload = function ( url , fnDone ){
+	// returning jqXHR , so no regular chaining
+	return this
+		.vjax ( url , { dataType : 'html'} )
+		.done ( function ( responseHtml ){
+			this .html ( responseHtml )
+		})
+}
+
+$.fn.vjax = function ( url , options ){
+	var o = this.o = {} // scope space
+  	$ .extend (	o , {
+		url : url ,
+		type : 'get' , // defaulting
+		dataType : 'json' , // expecting from server
+		context : this , // for handlers
+		beforeSend : function ( jqXHR ){
+			// expecting atomic DOM access within this handler
+			// last request per DOM element wins
+			( globals .prev_jqxhr = this .data ( 'my_jqxhr' ) ) &&
+				globals .prev_jqxhr .abort()
+			this .data ( 'my_jqxhr' , jqXHR )
+			this .addClass ( 'vmw-waiting' )
+		} ,
+		complete : function (){
+			this .data ( 'my_jqxhr' , null )
+			this .removeClass ( 'vmw-waiting' )
+		}
+	})
+
+	// defaulting for post-put data
+	options && options .data && /(post|put)/i .test ( options .type	) &&
+		$ .extend ( o , {
+			contentType : 'application/json' , // sending to server
+			processData : false
+		})
+
+	// returning jqXHR object , so no regular chainingv
+	return $.ajax ( $.extend ( o , options ) )
+} // vjax
+
+String .prototype .f = function (){
+	var a = arguments
+	return this .replace ( /{(\d+)}/g , function ( m , n ){ 
+		return a [ n ] ? a [ n ] : m 
+	})
+} // String.prototype.f
+
+var $my_nav = $( "nav#main_menu").on( 
+	'click' , '> a' , function ( e ){
+		var o = {}
 		e.stopPropagation()
 		e.preventDefault();
-		var $a = $( this )
-		if ( $a.hasClass( 'selected' ) ){
+		if ( ( o .$a = $( this ) ).hasClass( 'selected' ) ){
+			// already selected , doing nothing
 		} else {
-			$a.siblings( 'a' ).removeClass( 'selected').end()
-			$( '#main_page ').load ( $a.attr( 'href' ) )
-			$a.addClass( 'selected')
+			o .$a .siblings( 'a' ).removeClass( 'selected').end()
+			$( '#main_page ') .vload ( o .$a .attr( 'href' ) )
+				.done ( function (){
+					o .$a .addClass( 'selected')
+				})
 		}
-	}
+	} // click
 ).find( '> a' ).eq(0).click() // default top menu item
 
 </script>
