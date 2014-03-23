@@ -9,33 +9,32 @@
 	<style type="text/css" media="screen">
 	body {
 		font-family : arial , sans-serif ;
-		color: rgba(0,0,0,.9);
+		color: #333;
+		margin: 0 0 0 220px;
 		position: relative;
-		margin: 0;
 	}
 	h1, h3 {
-		 margin: 0
+		margin: 0;
+		box-sizing: border-box; -moz-box-sizing: border-box;
 	}
 	nav#main_menu {
-		color: white;
-		width: 100%;
-		opacity: 0.5;
-		background-color: black;
+		position: fixed;
+		width: 200px;
+		left: 10px; top: 10px;
+	}
+	nav#main_menu h1 {
+		background: url(/assets/test-logo.png) 8px 1em no-repeat;
+		padding-left: 60px;
+		border-bottom: 1px solid #ccc;
 	}
 	nav#main_menu > * {
-		display: inline-block;
+		display: block;
+		padding: 5px 10px;
 	}
 	nav#main_menu a {
-		color: white;
+		color: #333;
 		text-decoration: none;
-		text-shadow: 1px 1px rgba( 0, 0 , 0, 0.8);
-		padding: 10px;
 		opacity: 0.9;
-		font-size: small;
-	}
-	nav#main_menu a:not(:first-child) {
-		border-left: 1px solid #eaeaea;
-		margin-left: -4px;
 	}
 	nav#main_menu a:hover {
 		opacity: 1;
@@ -60,6 +59,9 @@
 		z-index: -1;
 		opacity: 0.43;
 	}
+	section#main_page.vmw-waiting {
+		opacity: 0.5;
+	}
  	</style>
 </head>
 
@@ -69,7 +71,7 @@
 	<div id="bottom_repeating_background"></div>
 
 	<nav id="main_menu">
-		<img src="/assets/test-logo.png" style="height:0.9em; width:1.5em; padding:0 5px;"/>
+		<h1>Dave's Portfolio</h1>
 		<a href="/samples/vmware">vmware</a>
 		<a href="/samples/etrade">etrade samples</a>
 		<a href="/foo/charting_demo">svg charts</a>
@@ -79,7 +81,8 @@
 		<a href="/samples/algos">algorithms</a>
 	</nav>
 
-	<div id="main_page" style="padding: 1em"></div>
+	<section id="main_page" style="padding: 1em">
+	</section>
 	
 </body>
 
