@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Portfolio</title>
+	<title>Dave's Portfolio</title>
 	<%= stylesheet_link_tag    "application", :media => "all" %>
 	<%= javascript_include_tag "application" %>
 	<%= csrf_meta_tags %>
@@ -13,34 +13,39 @@
 		margin: 0 0 0 220px;
 		position: relative;
 	}
-	h1, h3 {
+	h1, h3, section {
 		margin: 0;
 		box-sizing: border-box; -moz-box-sizing: border-box;
 	}
-	nav#main_menu {
+	nav.main {
 		position: fixed;
 		width: 200px;
 		left: 10px; top: 10px;
 	}
-	nav#main_menu h1 {
+	nav.main h1 {
 		background: url(/assets/test-logo.png) 8px 1em no-repeat;
 		padding-left: 60px;
 		border-bottom: 1px solid #ccc;
 	}
-	nav#main_menu > * {
+	nav.main > * {
 		display: block;
 		padding: 5px 10px;
 	}
-	nav#main_menu a {
+	nav.main a {
 		color: #333;
 		text-decoration: none;
 		opacity: 0.9;
 	}
-	nav#main_menu a:hover {
+	nav.main a:hover {
 		opacity: 1;
 	}
-	nav#main_menu a.selected {
+	nav.main a.selected {
 		opacity: 0.5;
+	}
+	section.main {
+		position: relative;
+		padding: 1em;
+		min-height: 500px; // todo: testing
 	}
  	#left_top_background {
 		position: absolute;
@@ -59,18 +64,27 @@
 		z-index: -1;
 		opacity: 0.43;
 	}
-	section#main_page.vmw-waiting {
+	.vmw-waiting {
 		opacity: 0.5;
 	}
- 	</style>
+	.spinner {
+		background: url(/assets/spinnerLarge.gif) no-repeat;
+		width: 60px;
+		height: 60px;
+		display: none;
+		position: absolute;
+		z-index: 1;
+	}
+</style>
 </head>
 
 
 <body>
 	<div id="left_top_background"></div>
 	<div id="bottom_repeating_background"></div>
+	<div class="spinner"></div>
 
-	<nav id="main_menu">
+	<nav class="main">
 		<h1>Dave's Portfolio</h1>
 		<a href="/samples/vmware">vmware</a>
 		<a href="/samples/etrade">etrade samples</a>
@@ -81,8 +95,7 @@
 		<a href="/samples/algos">algorithms</a>
 	</nav>
 
-	<section id="main_page" style="padding: 1em">
-	</section>
+	<section class="main"></section>
 	
 </body>
 
@@ -100,7 +113,7 @@ $.fn.vload = function ( url , fnDone ){
 }
 
 $.fn.vjax = function ( url , options ){
-	var o = this.o = {} // scope space
+	var o = this.o = {}
   	$ .extend (	o , {
 		url : url ,
 		type : 'get' , // defaulting
@@ -113,10 +126,19 @@ $.fn.vjax = function ( url , options ){
 				globals .prev_jqxhr .abort()
 			this .data ( 'my_jqxhr' , jqXHR )
 			this .addClass ( 'vmw-waiting' )
+			var target = this[ 0].getBoundingClientRect()
+			var doc = document.documentElement
+			$( '> .spinner' , document.body )
+				.css ({
+					top : -target.top + doc.clientHeight/2 - 30 ,
+					left : ( doc.clientWidth - target.left )/2 - 30
+				})
+				.show()
 		} ,
 		complete : function (){
 			this .data ( 'my_jqxhr' , null )
 			this .removeClass ( 'vmw-waiting' )
+			$( '> .spinner' , document.body ).hide()
 		}
 	})
 
@@ -127,18 +149,18 @@ $.fn.vjax = function ( url , options ){
 			processData : false
 		})
 
-	// returning jqXHR object , so no regular chainingv
+	// returning jqXHR object , so no regular chaining
 	return $.ajax ( $.extend ( o , options ) )
 } // vjax
 
 String .prototype .f = function (){
 	var a = arguments
 	return this .replace ( /{(\d+)}/g , function ( m , n ){ 
-		return a [ n ] ? a [ n ] : m 
+		return a [ n ] ? a [ n ] : m // be many
 	})
 } // String.prototype.f
 
-var $my_nav = $( "nav#main_menu").on( 
+var $my_nav = $( "nav.main").on( 
 	'click' , '> a' , function ( e ){
 		var o = {}
 		e.stopPropagation()
@@ -147,7 +169,7 @@ var $my_nav = $( "nav#main_menu").on(
 			// already selected , doing nothing
 		} else {
 			o .$a .siblings( 'a' ).removeClass( 'selected').end()
-			$( '#main_page ') .vload ( o .$a .attr( 'href' ) )
+			$( 'section.main' ) .vload ( o .$a .attr( 'href' ) )
 				.done ( function (){
 					o .$a .addClass( 'selected')
 				})
