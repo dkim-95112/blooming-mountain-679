@@ -8,7 +8,7 @@
 	border-right: 3px solid #e0e0e0;
 }
 </style>
-<div id="chart-container" style="position:static; height:300px;"></div>
+<div id="chart-container" style="display:inline-block;"></div>
 
 <a href="javascript:void(0)" onclick="toggle_my_source()">
 	javascript source
@@ -16,10 +16,10 @@
 <pre id="my-javascript-source" style="background:#eee"></pre>
 
 
-<%= javascript_include_tag 'raphael-min.js'%>
-<%= javascript_include_tag 'g.raphael-min.js'%>
-<%= javascript_include_tag 'g.pie-min.js'%>
-<%= javascript_include_tag 'g.line-min.js'%>
+<%= javascript_include_tag 'raphael.js'%>
+<%= javascript_include_tag 'g.raphael.js'%>
+<%= javascript_include_tag 'g.pie.js'%>
+<%= javascript_include_tag 'g.line.js'%>
 <script>
 function toggle_my_source(){
 	var $target = $('#my-javascript-source');
@@ -43,9 +43,15 @@ $(document).ready(function(){
 	
 	var time = [], large = [], medium = [], small = [];
 	var rline = Raphael(0, 0, 450, 300);
-	$(rline.canvas).attr({id: 'line-chart'})
-	.css({position:'relative'})
-	.appendTo('#chart-container');
+	$(rline.canvas)
+	.appendTo ('#chart-container')
+	.attr({
+		id : 'line-chart' ,
+		viewBox : '0 0 450 300'
+	})
+	.css({
+		position : 'relative'
+	})
 	var update_line = function(){
 		$.getJSON('/foo/time_series', function(v){
 			time.push(v.time);
@@ -73,10 +79,16 @@ $(document).ready(function(){
 	update_line();
 	
 	
-	var rpie = Raphael(0, 0, 250, 300);
-	$(rpie.canvas).attr({id: 'pie-chart'})
-	.css({position:'relative'})
-	.appendTo('#chart-container');
+	var rpie = Raphael(0, 0, 250, 300)
+	$(rpie.canvas)
+	.appendTo('#chart-container')
+	.attr({
+		id: 'pie-chart' ,
+		viewBox : '0 0 250 300'
+	})
+	.css({
+		position : 'relative'
+	})
 	var update_pie = function(){
 		$.getJSON('/foo/time_series', function(v){
 			$(rpie.canvas).empty();
