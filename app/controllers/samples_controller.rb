@@ -13,4 +13,7 @@ class SamplesController < ApplicationController
   def vmware
       render :layout => false
   end
+  def uicontrols
+      render :layout => false
+  end
 end

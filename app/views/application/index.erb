@@ -89,6 +89,7 @@
 		<h1>Dave's Portfolio</h1>
 		<a href="/samples/vmware">vmware</a>
 		<a href="/samples/etrade">etrade samples</a>
+		<a href="/samples/uicontrols">modal dialog</a>
 		<a href="/foo/charting_demo">svg charts</a>
 		<a href="/samples/jquery_plugin">jquery plugin</a>
 		<a href="/moviedb">backbone moviedb</a>
@@ -102,7 +103,7 @@
 
 <script>
 
-var globals = window
+var g = window
 
 $.fn.vload = function ( url , fnDone ){
 	// returning jqXHR , so no regular chaining
@@ -123,8 +124,8 @@ $.fn.vjax = function ( url , options ){
 		beforeSend : function ( jqXHR ){
 			// expecting atomic DOM access within this handler
 			// last request per DOM element wins
-			( globals .prev_jqxhr = this .data ( 'my_jqxhr' ) ) &&
-				globals .prev_jqxhr .abort()
+			( g .prev_jqxhr = this .data ( 'my_jqxhr' ) ) &&
+				g .prev_jqxhr .abort()
 			this .data ( 'my_jqxhr' , jqXHR )
 			this .addClass ( 'vmw-waiting' )
 			var target = this[ 0].getBoundingClientRect()
@@ -161,7 +162,7 @@ String .prototype .f = function (){
 	})
 } // String.prototype.f
 
-var $my_nav = $( "nav.main").on( 
+g.$my_nav = $( "nav.main").on( 
 	'click' , '> a' , function ( e ){
 		var o = {}
 		e.stopPropagation()

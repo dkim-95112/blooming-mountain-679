@@ -1,0 +1,245 @@
+<div style="min-height:300px">
+	<button class="alert" style="position:relative; top:90px;left:40px;">
+		alert dialog
+	</button>
+	<button class="error" style="position:relative; left: 100px;">
+		error dialog
+	</button>
+</div>
+<style>
+button:hover {
+	cursor: pointer;
+}
+button {
+	font-size: 14px;
+}
+</style>
+
+<script>
+$( document ) .ready ( function () {
+
+	$( 'button.alert' ).click( function ( eMouse ) {
+		vAlertDialog ( 'hi alert')
+//			.triggerHandler ( 'position_default_button_under_cursor' , [ e ])
+	})
+	$( 'button.error' ).click( function ( eMouse ) {
+		vErrorDialog ( 'hi error' )
+//			.triggerHandler ( 'position_default_button_under_cursor' , [ e ])
+	})
+} ) // ready
+
+function vErrorDialog (
+	options_or_string
+) {
+    var o = {}
+	$ .extend (
+		o , {
+			title : 'Error' ,
+			style : 'x'
+		} ,
+		isContentHtml ( options_or_string ) ? {
+			contentHtml : options_or_string
+		} : options_or_string
+	) // extend
+    return vAlertDialog ( o )
+} // vErrorDialog
+
+function isContentHtml (
+	v
+) {
+	return typeof v === 'string' || v instanceof $
+} // isContentHtml
+
+// more simple than input dialog, no gray footerbar, center buttons at bottom
+// https://vdc-stg-app-vip.vmware.com/web/standards/-/alert-dialogs
+function vAlertDialog (
+	options_or_string // string or object
+) {
+	var o = {} // a new day
+	$ .extend ( o , {
+		title : 'Confirm' ,
+		style : "info" , // i-info, ?-confirm, !-warn, x-error
+		buttons : [
+			{
+				title : 'Ok',
+				callback : function (
+					e
+				) {
+					e .preventDefault (
+					)
+				} // callback
+			} // anon
+		] // buttons
+	} , isContentHtml ( options_or_string ) ? {
+		contentHtml : options_or_string
+	} : options_or_string ) // extend
+
+	o .$dialog = $ .vModalDialog (
+		$ ( '<table/>' ) .css (
+			o .table_css = {
+				'border-collapse' : 'collapse' ,
+				width : 322 , // like min-width for table since it auto expands
+				'max-width' : 496 
+			}
+		) .append (
+			$ ( '<tr style="line-height:1.5em; background-color:#dedede"/>' ) .append ( 
+				o .$titlebar = $ ( '<th class="dragHandle" colspan="100"/>' ) .append (
+					o .title
+				) // titlebar - without icon in alert dialogs, see standards.vmware.com
+			) ,
+			$ ( '<tr/>' ) .append (
+				o .$body_content = $ ( '<td class="vmw-dialog-content"/>' ) .css (
+					o .body_content_css = {
+						padding : '1em 1em 1em 60px' , // room for background icon
+						background : (
+							function (
+							) {
+								return 'white url({0}) no-repeat 15px 15px' .f (
+									[
+										"images/help32x.png" ,
+										"images/warning32x.png" ,
+										"assets/error32x.png"
+									] [
+										o .iconIndex
+									] || "assets/info32x.png"
+								) // format
+							} // anon
+						) ( // param
+							o .iconIndex = o .style .length === 1 ? (
+								'?!x' .indexOf ( o .style )
+							) : (
+								$ .inArray (
+									o .style , [ 'confirm' , 'warn' , 'err' ] 
+								) // inArray
+							) // iconIndex
+						) // background
+					} // body_content_css
+				) .append (
+					o .contentHtml
+				) // $body_content
+			) , // append tr
+			$ ( '<tr/>' ) .append (
+				o .$footer = $ ( '<td colspan="100"/>' ) .css (
+					{
+						'text-align' : 'center' , height : 42 , 'background-color' : 'white'
+					}
+				) .append (
+					$ .map (
+						o .buttons , function (
+							v
+						) {
+							return $ ( '<button class="vmw-button"/>' ) .append (
+								v .title
+							) .one (
+								{
+									click : function (
+										e
+									) {
+										e .preventDefault (
+										)
+										v .callback && v .callback .call (
+											this , e
+										)
+										o .$dialog .triggerHandler (
+											'close'
+										)
+									} // click
+								} // anon
+							) // one
+						} // anon
+					) // map
+				) // append $footer
+			) // append tr
+		) // append table
+	) // vModalDialog
+    return o .$dialog
+} // vAlertDialog
+
+function isElementInViewport (el) {
+    var rect = el.getBoundingClientRect();
+    return (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <= $(window).height() &&
+	        // or (window.innerHeight || document.documentElement.clientHeight)
+        rect.right <= $(window).width()
+	        // or (window.innerWidth || document.documentElement.clientWidth)
+    );
+}
+
+// using body as context, so call function directly
+$.vModalDialog = function (	$contentHtml , options ){
+	var o = this .o = {}
+	$ .extend ( o , {
+		$body : $( document.body ) .on ({
+			'keyup' : function ( e ){
+				if (
+					e.keyCode === 27  // 'escape' key ?
+				){
+					o.$container .triggerHandler (
+						'close'
+					)
+				} // if
+			} // keyup
+		}) , // on
+		$overlay : $( '<div class="overlay"/>' ) .css({
+			position: 'absolute' ,
+			height: '100%' ,
+			width: '100%' ,
+			opacity: '0.3' ,
+			'z-index': 10 ,
+			top: 0 ,
+			left: 0 ,
+			'background-color': 'black'
+		}) ,
+		$container : $( '<div class="container"/>' ) .css({
+			position : 'absolute' ,
+			'z-index' : 100
+		}) .one ({
+			close : function ( e ){
+				o.$overlay .remove ()
+				o.$container .triggerHandler ( 'beforeClose' )
+				return o.$container .remove ()
+			} // close
+		}) .on ( 'mousedown' , '.dragHandle' , function ( e ){ // starting drag
+			o.pageX0 = e.pageX // relative to doc.body ?
+			o.pageY0 = e.pageY
+			o.offset0 = o.$container .offset ()
+			o.$body .on ({
+				'mousemove.dragging' : function ( e	){
+					// dragging dialog into right edge will collapse width
+					// so stopping when right side hits containing side
+					debugger
+					o.$container .offset ({
+						top : o.offset0 .top + ( e.pageY - o.pageY0 ) ,
+						left : o.offset0 .left + ( e.pageX - o.pageX0 )
+					})
+				} , // mousemove
+				'mouseup.dragging' : function (	e ) {
+					o.$body .off ( '.dragging'	)
+				} // mouseup
+			}) // on body
+		}) .on ({
+			center : function (){
+				var page = o.$body [0] .getBoundingClientRect()
+				var $w = $( window )
+				return o.$container .css ( o.eMouse ? {
+					// with mouse event, try to center button under click
+				} : {
+					// no mouse event, just center dialog
+					top : ( $w.height() - o.$container.outerHeight() ) / 2 - page.top,
+					left : ( $w.width () - page.left - o.$container.outerWidth() ) / 2
+				}) // css
+			} // center
+		}) // on
+	} , options ) // extend
+
+	return o.$container .appendTo (
+		o.$body .append ( o.$overlay )
+	) .end () .append (
+		$contentHtml
+	) .triggerHandler (
+		'center'
+	)
+} // vModalDialog
+</script>

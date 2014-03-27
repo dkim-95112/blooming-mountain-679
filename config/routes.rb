@@ -14,6 +14,7 @@ MyPortfolio::Application.routes.draw do
   get 'samples/ots_way' => 'samples#ots_way'
   get 'samples/algos' => 'samples#algos'
   get 'samples/vmware' => 'samples#vmware'
+  get 'samples/uicontrols' => 'samples#uicontrols'
   
   get 'moviedb' => 'movie#moviedb'
   get 'all_movies'  => 'movie#all_movies'
