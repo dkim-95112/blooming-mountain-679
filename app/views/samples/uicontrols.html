@@ -209,7 +209,6 @@ $.vModalDialog = function (	$contentHtml , options ){
 				'mousemove.dragging' : function ( e	){
 					// dragging dialog into right edge will collapse width
 					// so stopping when right side hits containing side
-					debugger
 					o.$container .offset ({
 						top : o.offset0 .top + ( e.pageY - o.pageY0 ) ,
 						left : o.offset0 .left + ( e.pageX - o.pageX0 )
