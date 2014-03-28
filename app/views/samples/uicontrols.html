@@ -222,12 +222,14 @@ $.vModalDialog = function (	$contentHtml , options ){
 			center : function (){
 				var page = o.$body [0] .getBoundingClientRect()
 				var $w = $( window )
+				var w = Math.min ( $w.width () , page.width )
+				var h = Math.min ( $w.height () , page.height )
 				return o.$container .css ( o.eMouse ? {
 					// with mouse event, try to center button under click
 				} : {
 					// no mouse event, just center dialog
-					top : ( $w.height() - o.$container.outerHeight() ) / 2 - page.top,
-					left : ( $w.width () - page.left - o.$container.outerWidth() ) / 2
+					top : ( h - o.$container.outerHeight() ) / 2 - page.top,
+					left : ( w - page.left - o.$container.outerWidth() ) / 2
 				}) // css
 			} // center
 		}) // on
