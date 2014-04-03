@@ -3,13 +3,16 @@ class TweetsController < ActionController::Base
   def index
       respond_to do | format |
         format.html { 
-            render layout:false
+            render :layout => false
         }
         format.json {
           #sql = 'select t.mytext , c.ip from tweets t left outer join chicks c on t.chick_id = c.id'
           #r = ActiveRecord::Base.connection.execute( sql ).values
           tweets = Tweet.includes ( :chick )
-          render :json => tweets , :include => { :chick => { :only => :ip} }
+          render :json => {
+            :tweets => tweets.as_json( :include => { :chick => { :only => :ip } } ) ,
+            :foo => 'bar'
+          }
         }
       end
   end
