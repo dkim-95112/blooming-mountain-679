@@ -20,3 +20,13 @@ movies = movie_casts.each do |title, actors|
     Cast.find_or_create_by_movie_id_and_actor_id(movie.id, actor.id)
   end
 end
+
+
+some_tweets = [
+	[ '127.0.0.1' , 'hello world' ] ,
+	[ '127.0.0.1' , 'what up ?' ] ,
+]
+tweets = some_tweets.each do | ip , text |
+	chick = Chick.find_or_create_by_ip( ip )
+	tweet = Tweet.find_or_create_by_chick_id_and_mytext( chick.id , text )
+end

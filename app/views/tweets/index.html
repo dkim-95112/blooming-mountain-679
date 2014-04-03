@@ -1,0 +1,90 @@
+<style>
+form[name="tweet"] textarea {
+	height: 10em;
+	width: 50em;
+	resize: none;
+	vertical-align: top;
+}
+</style>
+
+<header>
+	<h1>IP Twitter</h1>
+	<h3>
+		HTMLElement.dataset (html5)
+	</h3>
+</header>
+
+<form name="tweet_list">
+	<div id="my_rdata" data-remoteip="<%= request.remote_ip %>"></div>
+	<ul>
+		<li>ip: <span class="remoteip"></span>
+		<li>(<span class="stat"></span>)
+		<li>updated@<span class="updat"></span>
+		<li>created@<span class="creat"></span>
+	</ul>
+	<textarea name="text" placeholder="Sing out over all !"/></textarea>
+	<div>* By IP/timestamp only, storage limited at this time</div>
+</form>
+
+<script>
+
+$.fn.tweet_list = function ( options ){
+	var o = this.o = {}
+	$.extend ( o , {
+	} , options )
+
+	this.vjax ( '/tweets' ).done ( function ( tweets ){
+		debugger
+		this.append (
+			$.map ( tweets , function ( t ) {
+				return $( '<form class="tweet"/>').iptwitter( t )
+		
+			})
+		) // append
+	}) // done
+
+	return this
+		.on ( 'focus' , 'textarea' , function (){
+			debugger
+			o.$ip.html ( o.remoteip )
+			o.$stat.html ( "editing" )
+		}).on ( 'blur' , 'textarea' , function (){
+			debugger
+			o.$stat.html ( this.id ? "updating" : "creating" )
+			$( this ).vjax ( 'samples/tweet' , {
+				type : this.id ? 'put' : 'post' ,
+				data : JSON.stringify ({
+					text : document.forms.tweet.text.value ,
+					remoteip : o.remoteip
+				})
+			}).done ( function ( dta ){
+				o.$creat.html ( data.created_at )
+				o.$updat.html ( data.updated_at )
+				o.$stat.html ( this.id ? "updated" : "created")
+				this.id || ( this.id = data.id )
+			})
+		}) // blur
+}
+$.fn.iptwitter = function( options ){
+	var o = this.o = {}
+	$.extend ( o , {
+	} , options )
+
+	return this.append (
+		$( '<ul/>' ).append (
+			o.$ip = $( '<li class="remoteip"/>' ).html ( "ip@" + o.remoteip ) ,
+			o.$stat = $( '<li class="stat"/>' ).html ( "click inside to edit" ) ,
+			o.$updat = $( '<li class="updat"/>' ).html ( "updated@" + o.updated_at ) ,
+			o.$creat = $( '<li class="creat"/>' ).html ( "created@" + o.created_at )
+		) ,
+		$( '<textarea/>' ).id ( o.id ).value ( o.mytext )
+	) // append
+} // $.fn.iptwitter
+
+// $( document.forms.tweet.text ).iptwitter ({
+// 	remoteip : $('#my_rdata')[0].dataset.remoteip
+// })
+
+$( document.forms.tweet_list ).tweet_list ()
+
+</script>

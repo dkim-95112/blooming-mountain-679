@@ -89,6 +89,7 @@
 		<h1>Dave's Portfolio</h1>
 		<a href="/samples/vmware">vmware</a>
 		<a href="/samples/etrade">etrade samples</a>
+		<a href="/tweets">ip twitter</a>
 		<a href="/samples/uicontrols">modal dialog</a>
 		<a href="/foo/charting_demo">svg charts</a>
 		<a href="/samples/jquery_plugin">jquery plugin</a>
@@ -162,7 +163,7 @@ String .prototype .f = function (){
 	})
 } // String.prototype.f
 
-g.$my_nav = $( "nav.main").on( 
+g.$my_nav = $( "nav.main").on(
 	'click' , '> a' , function ( e ){
 		var o = {}
 		e.stopPropagation()
@@ -177,7 +178,9 @@ g.$my_nav = $( "nav.main").on(
 				})
 		}
 	} // click
-).find( '> a' ).eq(0).click() // default top menu item
+)
+
+$( 'a[href$="/tweets"]' , g.$my_nav ).click() // default
 
 </script>
 
