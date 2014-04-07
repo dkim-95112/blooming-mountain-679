@@ -3,7 +3,7 @@ class CreateTweets < ActiveRecord::Migration
     create_table :tweets do |t|
       t.text :mytext
 
-      t.references :chick
+      t.belongs_to :chick
       t.timestamps
     end
   end

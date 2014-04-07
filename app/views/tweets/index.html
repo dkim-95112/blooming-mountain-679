@@ -1,9 +1,30 @@
 <style>
-form[name="tweet"] textarea {
+ul.tweet_list {
+	padding : 0;
+	margin : 0;
+	list-style: none;
+}
+ul.tweet_list > li {
+	padding: 1em 0;
+}
+ul.tweet_list > li:not( :first-child ) {
+	border-top: 1px solid #eaeaea;
+}
+ul.tweet_list textarea {
 	height: 10em;
-	width: 50em;
+	width: 420px;
 	resize: none;
-	vertical-align: top;
+}
+li.tweet label {
+	display: inline-block;
+}
+li.tweet label ul {
+	margin : 0;
+	padding : 0;
+	list-style: none ;
+}
+li.tweet label li {
+	opacity : 0.7;
 }
 </style>
 
@@ -14,77 +35,91 @@ form[name="tweet"] textarea {
 	</h3>
 </header>
 
-<form name="tweet_list">
-	<div id="my_rdata" data-remoteip="<%= request.remote_ip %>"></div>
-	<ul>
-		<li>ip: <span class="remoteip"></span>
-		<li>(<span class="stat"></span>)
-		<li>updated@<span class="updat"></span>
-		<li>created@<span class="creat"></span>
-	</ul>
-	<textarea name="text" placeholder="Sing out over all !"/></textarea>
-	<div>* By IP/timestamp only, storage limited at this time</div>
-</form>
+<ul class="tweet_list"></ul>
 
 <script>
-
 $.fn.tweet_list = function ( options ){
 	var o = this.o = {}
 	$.extend ( o , {
+		$mylist : this
 	} , options )
 
-	this.vjax ( '/tweets' ).done ( function ( tweets ){
-		debugger
+	o.$mylist.vjax ( '/tweets' ).done ( function ( data ){
+		o.remote_addr = data.remote_addr
 		this.append (
-			$.map ( tweets , function ( t ) {
-				return $( '<form class="tweet"/>').iptwitter( t )
-		
-			})
+			$( '<li class="tweet"/>').tweet( o ) , // create new
+			$.map( data.tweets , function( t ) { // existing
+				return $( '<li class="tweet"/>').tweet(
+					$.extend( o , t )
+				)
+			}) // map
 		) // append
 	}) // done
-
-	return this
-		.on ( 'focus' , 'textarea' , function (){
-			debugger
-			o.$ip.html ( o.remoteip )
-			o.$stat.html ( "editing" )
-		}).on ( 'blur' , 'textarea' , function (){
-			debugger
-			o.$stat.html ( this.id ? "updating" : "creating" )
-			$( this ).vjax ( 'samples/tweet' , {
-				type : this.id ? 'put' : 'post' ,
-				data : JSON.stringify ({
-					text : document.forms.tweet.text.value ,
-					remoteip : o.remoteip
-				})
-			}).done ( function ( dta ){
-				o.$creat.html ( data.created_at )
-				o.$updat.html ( data.updated_at )
-				o.$stat.html ( this.id ? "updated" : "created")
-				this.id || ( this.id = data.id )
-			})
-		}) // blur
-}
-$.fn.iptwitter = function( options ){
+} // $.fn.tweet_list
+			
+$.fn.tweet = function( options ){
 	var o = this.o = {}
-	$.extend ( o , {
-	} , options )
+	$.extend( o , {
+		$mytweet : this
+	} , options)
 
-	return this.append (
-		$( '<ul/>' ).append (
-			o.$ip = $( '<li class="remoteip"/>' ).html ( "ip@" + o.remoteip ) ,
-			o.$stat = $( '<li class="stat"/>' ).html ( "click inside to edit" ) ,
-			o.$updat = $( '<li class="updat"/>' ).html ( "updated@" + o.updated_at ) ,
-			o.$creat = $( '<li class="creat"/>' ).html ( "created@" + o.created_at )
-		) ,
-		$( '<textarea/>' ).id ( o.id ).value ( o.mytext )
+	return this.attr({ id: o.id })
+	.on( 'blur' , 'textarea' , function (){
+		$( o.$mytweet ).vjax( '/tweets' + ( o.id ? '/' + o.id : '' ) , {
+			type : o.id ? 'put' : 'post' ,
+			data : JSON.stringify ({
+				mytext : this.value
+			})
+		}).done( function ( data ){
+			o.$mytweet.triggerHandler( 'options', data.tweet )
+			if( o.$mytweet.index() === 0 ) { // then inserting empty tweet
+				$( '<li class="tweet"/>').tweet({
+					$mylist : o.$mylist ,
+					remote_addr: o.remote_addr
+				}).prependTo(
+					o.$mylist
+				)
+			}
+		})
+	})
+	.on( 'click' , '.delete a' , function(){
+		$( this ).vjax ( '/tweets/' + o.id , {
+			type : 'delete'
+		}).done ( function ( data ){
+			o.$mytweet.remove()
+		})
+	})
+	.on( 'options', function( e , options ){
+		$.extend( o , options )
+
+		o.updated_at && $( 'li.updat' , this ).show().find( 'span' ).html(
+			new Date( o.updated_at )
+		)
+		o.created_at && $( 'li.creat' , this ).show().find( 'span' ).html(
+			new Date( o.created_at )
+		)
+		o.id && $( 'li.delete' , this ).show()
+		o.mytext && $( 'textarea' , this ).val(
+			o.mytext
+		)
+ 		return $( this ) // chaining
+	})
+	.append(
+		$( '<label/>' ).append(
+			$( '<ul/>').append(
+				'<li class="remoteip">remote_addr: <span>{0}</span>'.f(
+					o.remote_addr
+				) ,
+				'<li class="updat" style="display:none">updated: <span></span>',
+				'<li class="creat" style="display:none">created: <span></span>',
+				'<li class="delete" style="display:none"><a href="javascript:void(0)">Delete</a>'
+			) ,
+			'<textarea placeholder="click a new tweet"/>'
+		) // append
 	) // append
-} // $.fn.iptwitter
+	.triggerHandler( 'options' , o )
+} // $.fn.tweet
 
-// $( document.forms.tweet.text ).iptwitter ({
-// 	remoteip : $('#my_rdata')[0].dataset.remoteip
-// })
-
-$( document.forms.tweet_list ).tweet_list ()
+$( 'ul.tweet_list' ).tweet_list ()
 
 </script>

@@ -6,15 +6,16 @@
 	<%= javascript_include_tag "application" %>
 	<%= csrf_meta_tags %>
 
-	<style type="text/css" media="screen">
+	<style type="text/css">
 	body {
 		font-family : arial , sans-serif ;
 		color: #333;
-		margin: 0 0 0 220px;
-		position: relative;
-	}
-	h1, h3, section {
 		margin: 0;
+	}
+	h1, h3 {
+		margin: 0;
+	}
+	body, div, nav, section, ul, textarea {
 		box-sizing: border-box; -moz-box-sizing: border-box;
 	}
 	nav.main {
@@ -42,9 +43,15 @@
 	nav.main a.selected {
 		opacity: 0.5;
 	}
-	section.main {
+ 	div.main {
+ 		position: absolute;
+ 		left: 220px;
+ 		right: 0;
+ 		overflow-x: hidden;
+ 	}
+ 	section.main {
 		position: relative;
-		padding: 1em;
+		padding: 10px;
 	}
  	#left_top_background {
 		position: absolute;
@@ -79,12 +86,7 @@
 </style>
 </head>
 
-
 <body>
-	<div id="left_top_background"></div>
-	<div id="bottom_repeating_background"></div>
-	<div class="spinner"></div>
-
 	<nav class="main">
 		<h1>Dave's Portfolio</h1>
 		<a href="/samples/vmware">vmware</a>
@@ -98,8 +100,12 @@
 		<a href="/samples/algos">algorithms</a>
 	</nav>
 
-	<section class="main"></section>
-	
+	<div class="main">
+		<div id="left_top_background"></div>
+		<div id="bottom_repeating_background"></div>
+		<div class="spinner"></div>
+		<section style="padding:10px"></section>
+	</div>
 </body>
 
 <script>
@@ -108,16 +114,16 @@ var g = window
 
 $.fn.vload = function ( url , fnDone ){
 	// returning jqXHR , so no regular chaining
-	return this
-		.vjax ( url , { dataType : 'html'} )
-		.done ( function ( responseHtml ){
-			this .html ( responseHtml )
-		})
+	return this.vjax( url , {
+		dataType : 'html'
+	}).done ( function ( responseHtml ){
+		this .html( responseHtml )
+	})
 }
 
 $.fn.vjax = function ( url , options ){
 	var o = this.o = {}
-  	$ .extend (	o , {
+  	$.extend( o , {
 		url : url ,
 		type : 'get' , // defaulting
 		dataType : 'json' , // expecting from server
@@ -125,18 +131,17 @@ $.fn.vjax = function ( url , options ){
 		beforeSend : function ( jqXHR ){
 			// expecting atomic DOM access within this handler
 			// last request per DOM element wins
-			( g .prev_jqxhr = this .data ( 'my_jqxhr' ) ) &&
-				g .prev_jqxhr .abort()
-			this .data ( 'my_jqxhr' , jqXHR )
-			this .addClass ( 'vmw-waiting' )
+			( g.prev_jqxhr = this.data ( 'my_jqxhr' ) ) &&
+				g.prev_jqxhr .abort()
+			this.data ( 'my_jqxhr' , jqXHR )
+			this.addClass ( 'vmw-waiting' )
 			var target = this[ 0].getBoundingClientRect()
 			var doc = document.documentElement
-			$( '> .spinner' , document.body )
-				.css ({
-					top : -target.top + doc.clientHeight/2 - 30 ,
-					left : ( doc.clientWidth - target.left )/2 - 30
-				})
-				.show()
+			$( '> .spinner' , document.body ).css ({
+				top : -target.top + doc.clientHeight/2 - 30 ,
+				left : ( doc.clientWidth - target.left )/2 - 30
+			})
+			.show()
 		} ,
 		complete : function (){
 			this .data ( 'my_jqxhr' , null )
@@ -146,24 +151,24 @@ $.fn.vjax = function ( url , options ){
 	})
 
 	// defaulting for post-put data
-	options && options .data && /(post|put)/i .test ( options .type	) &&
+	options && options.data && /(post|put)/i .test( options .type ) &&
 		$ .extend ( o , {
 			contentType : 'application/json' , // sending to server
 			processData : false
 		})
 
 	// returning jqXHR object , so no regular chaining
-	return $.ajax ( $.extend ( o , options ) )
+	return $.ajax( $.extend ( o , options ) )
 } // vjax
 
 String .prototype .f = function (){
 	var a = arguments
 	return this .replace ( /{(\d+)}/g , function ( m , n ){ 
-		return a [ n ] ? a [ n ] : m // be many
+		return a [ n ]
 	})
 } // String.prototype.f
 
-g.$my_nav = $( "nav.main").on(
+g.$my_nav = $( 'nav.main').on(
 	'click' , '> a' , function ( e ){
 		var o = {}
 		e.stopPropagation()
@@ -172,7 +177,7 @@ g.$my_nav = $( "nav.main").on(
 			// already selected , doing nothing
 		} else {
 			o .$a .siblings( 'a' ).removeClass( 'selected').end()
-			$( 'section.main' ) .vload ( o .$a .attr( 'href' ) )
+			$( '> section' , 'div.main' ) .vload ( o .$a .attr( 'href' ) )
 				.done ( function (){
 					o .$a .addClass( 'selected')
 				})

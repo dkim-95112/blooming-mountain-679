@@ -1,42 +1,61 @@
 class TweetsController < ActionController::Base
 
   def index
-      respond_to do | format |
-        format.html { 
-            render :layout => false
+    respond_to do | format |
+      format.html { 
+        render :layout => false
+      }
+      format.json {
+        #sql = 'select t.mytext , c.ip from tweets t left outer join chicks c on t.chick_id = c.id'
+        #r = ActiveRecord::Base.connection.execute( sql ).values
+        @tweets = Tweet.includes ( :chick )
+        render :json => {
+          :http_host => env[ "HTTP_HOST" ] ,
+          :remote_addr => env[ "REMOTE_ADDR" ] ,
+          :tweets => @tweets.recent.as_json(
+            :include => {
+             :chick => { :only => :ip }
+            }
+          )
         }
-        format.json {
-          #sql = 'select t.mytext , c.ip from tweets t left outer join chicks c on t.chick_id = c.id'
-          #r = ActiveRecord::Base.connection.execute( sql ).values
-          tweets = Tweet.includes ( :chick )
-          render :json => {
-            :tweets => tweets.as_json( :include => { :chick => { :only => :ip } } ) ,
-            :foo => 'bar'
-          }
-        }
-      end
+      }
+    end
   end
 
-
-  def all_tweets
-    @tweets = Tweet.all
-    respond_to do |format|
-      format.json { render :json => @tweets }
+  def create
+    respond_to do | format |
+      @chick = Chick.find_or_create_by_ip( request.remote_addr )
+      @tweet = @chick.tweets.new
+      @tweet.mytext = params[ :mytext ]
+      result = @tweet.save
+      format.json {
+        render :json => {
+          :result => result ,
+          :tweet => @tweet
+        }
+      }
     end
   end
-  def tweet_list
-    @tweets = Tweet.joins(:chicks).where([ "chick_id=?" , params[:id] ])
-    respond_to do |format|
-      format.json { render :json => @tweets }
+  def update
+    respond_to do | format |
+      @tweet = Tweet.find( params[ :id ] )
+      @tweet.mytext = params[ :mytext ]
+      result = @tweet.save
+      format.json {
+        render :json => {
+          :result => result ,
+          :tweet => @tweet
+        }
+      }
     end
   end
-  def tweet
-    debugger
-    
-    chick = Chick.find_or_create_by_ip( params[ :remoteip ] )
-    tweet = Tweet.find_or_create_by_chick_id_and_mytext( chick.id , params[ :text ] )
-    respond_to do |format|
-      format.json { render json: tweet }
+  def destroy
+    respond_to do | format |
+      @chick = Chick.find_by_ip request.remote_addr
+      result = @chick.tweets.destroy( params[ :id ] )
+      format.json {
+        render :json => { :result => result }
+      }
     end
-   end
+  end
 end
