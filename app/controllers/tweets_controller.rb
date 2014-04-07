@@ -51,8 +51,7 @@ class TweetsController < ActionController::Base
   end
   def destroy
     respond_to do | format |
-      @chick = Chick.find_by_ip request.remote_addr
-      result = @chick.tweets.destroy( params[ :id ] )
+      result = Tweet.destroy( params[ :id ] )
       format.json {
         render :json => { :result => result }
       }
