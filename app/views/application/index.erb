@@ -10,7 +10,9 @@
 	body {
 		font-family : arial , sans-serif ;
 		color: #333;
-		margin: 0;
+		margin: 0 0 0 220px;
+		position: relative;
+		min-width: 440px;
 	}
 	h1, h3 {
 		margin: 0;
@@ -19,9 +21,9 @@
 		box-sizing: border-box; -moz-box-sizing: border-box;
 	}
 	nav.main {
-		position: fixed;
+		position: absolute;
 		width: 200px;
-		left: 10px; top: 10px;
+		left: -210px; top: 10px;
 	}
 	nav.main h1 {
 		background: url(/assets/test-logo.png) 8px 1em no-repeat;
@@ -44,10 +46,10 @@
 		opacity: 0.5;
 	}
  	div.main {
- 		position: absolute;
+ 		/*position: absolute;
  		left: 220px;
  		right: 0;
- 		overflow-x: hidden;
+ 		overflow-x: hidden;*/
  	}
  	section.main {
 		position: relative;
@@ -55,16 +57,18 @@
 	}
  	#left_top_background {
 		position: absolute;
-		width: 100%;
-		height: 100%;
+		left: 0;
+		right: 0;
+		top: 0;
+		bottom: 0;
 		max-height: 1200px;
-		background: url(/assets/desktop2.jpg) no-repeat;
+		background: url(/assets/desktop2.jpg) repeat-x;
 		z-index: -1;
 		opacity: 0.45;
 	}
 	#bottom_repeating_background {
 		position: absolute;
-		background: url(/assets/desktop2bottom.jpg) repeat-y;
+		background: url(/assets/desktop2bottom.jpg);
 		top: 1200px;
 		bottom: 0px;
 		width: 100%;
@@ -100,10 +104,10 @@
 		<a href="/samples/algos">algorithms</a>
 	</nav>
 
+	<div id="left_top_background"></div>
+	<div id="bottom_repeating_background"></div>
+	<div class="spinner"></div>
 	<div class="main">
-		<div id="left_top_background"></div>
-		<div id="bottom_repeating_background"></div>
-		<div class="spinner"></div>
 		<section style="padding:10px"></section>
 	</div>
 </body>
