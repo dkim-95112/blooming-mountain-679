@@ -131,25 +131,33 @@ $.fn.vjax = function ( url , options ){
 		url : url ,
 		type : 'get' , // defaulting
 		dataType : 'json' , // expecting from server
-		context : this , // for handlers
+		context : this , // jQuery.ajax() option for jqXHR.done/always/...
 		beforeSend : function ( jqXHR ){
 			// expecting atomic DOM access within this handler
 			// last request per DOM element wins
-			( g.prev_jqxhr = this.data ( 'my_jqxhr' ) ) &&
-				g.prev_jqxhr .abort()
-			this.data ( 'my_jqxhr' , jqXHR )
-			this.addClass ( 'vmw-waiting' )
-			var target = this[ 0].getBoundingClientRect()
+			o.jqXHR && o.jqXHR.abort() // aborting pending if any
+			o.jqXHR = jqXHR
+			o.context.addClass( 'vmw-waiting' )
+			var target = o.context[ 0].getBoundingClientRect()
 			var doc = document.documentElement
+			var height = Math.min( target.bottom , doc.clientHeight ) -
+				Math.max( target.top , 0 )
+			var width = Math.min( target.right , doc.clientWidth ) -
+				Math.max( target.left , 0 )
+			var offset = o.context.offset()
+			var top = Math.max( offset.top , document.body.scrollTop )
+			var left = Math.max( offset.left , document.body.scrollLeft )
 			$( '> .spinner' , document.body ).css ({
-				top : -target.top + doc.clientHeight/2 - 30 ,
-				left : ( doc.clientWidth - target.left )/2 - 30
+				top : top + height/2 - 30 ,
+				left : left + width/2 - 30 -
+					parseInt( $( document.body ).css( 'margin-left') )
+
 			})
 			.show()
 		} ,
 		complete : function (){
-			this .data ( 'my_jqxhr' , null )
-			this .removeClass ( 'vmw-waiting' )
+			o.jqXHR = null // resetting handle
+			o.context.removeClass( 'vmw-waiting' )
 			$( '> .spinner' , document.body ).hide()
 		}
 	})
