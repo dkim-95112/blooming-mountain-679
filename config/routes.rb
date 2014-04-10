@@ -6,6 +6,7 @@ MyPortfolio::Application.routes.draw do
 
   get 'helloapp' => 'helloapp#index'
 
+  get 'webrtc' => 'samples#webrtc'
   get 'samples/algos2' => 'samples#algos2'
   get 'algos/sorted' => 'algos#sorted'
   

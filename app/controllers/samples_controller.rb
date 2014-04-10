@@ -16,4 +16,7 @@ class SamplesController < ApplicationController
   def uicontrols
       render :layout => false
   end
+  def webrtc
+      render :layout => false
+  end
 end

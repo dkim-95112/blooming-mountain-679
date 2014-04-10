@@ -1,0 +1,65 @@
+<header>
+	<h1>Video Stream</h1>
+	<h3>HTML5/WebRTC/getUserMedia()/MediaStream</h3>
+</header>
+<style>
+video {
+	width: 300px;
+}
+button.disabled {
+	opacity: 0.5;
+}
+</style>
+
+<video autoplay controls></video>
+<div>
+	<button class="get">get media stream</button>
+	<button class="stop">stop</button>
+</div>
+
+<script>
+( function(){
+
+	var errorCallback = function(e) {
+	    console.log('Reeeejected!', e);
+	};
+
+	navigator.getUserMedia  = navigator.getUserMedia ||
+	                          navigator.webkitGetUserMedia ||
+	                          navigator.mozGetUserMedia ||
+	                          navigator.msGetUserMedia ||
+	alert(
+		'navigator getUserMedia methond not found.\n'+
+		'Tested on recent Chrome only.'
+	)
+
+	var mystream = null;
+	function getVideoStream( e){
+		var getButton = this
+		navigator.getUserMedia(
+			{
+				audio: false ,
+				video: true
+			} ,
+			function(stream) {
+		 	 	$( 'video' )[0].src = window.URL.createObjectURL(
+		 	 		mystream = stream
+		 	 	);
+		 	 	$( getButton ).addClass( 'disabled')
+				$( 'button.stop' ).one( 'click' , stopVideoStream)
+					.removeClass( 'disabled')
+			},
+			errorCallback
+		);
+	} // getVideoStream
+	function stopVideoStream( e){
+		mystream.stop()
+		$( this).addClass( 'disabled')
+		$( 'button.get' ).one( 'click' , getVideoStream )
+			.removeClass( 'disabled')
+	} // stopVideoStream
+
+	$( 'button.get' ).one( 'click' , getVideoStream ).click()
+
+})()
+</script>
