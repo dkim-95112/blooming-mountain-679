@@ -59,6 +59,12 @@ button.disabled {
 			.removeClass( 'disabled')
 	} // stopVideoStream
 
+	$( '> section' , 'div.main').one( 'unload' , function(){
+		if( mystream ){
+			mystream.ended || mystream.stop()
+		}
+		$( 'video').remove()
+	})
 	$( 'button.get' ).one( 'click' , getVideoStream ).click()
 
 })()

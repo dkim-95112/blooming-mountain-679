@@ -182,24 +182,28 @@ String .prototype .f = function (){
 	})
 } // String.prototype.f
 
-g.$my_nav = $( 'nav.main').on(
+var $my_section = $( '> section' , 'div.main' );
+var $my_nav = $( 'nav.main').on(
 	'click' , '> a' , function ( e ){
-		var o = {}
+		var $a = $( this)
 		e.stopPropagation()
 		e.preventDefault();
-		if ( ( o .$a = $( this ) ).hasClass( 'selected' ) ){
+		if ( $a.hasClass( 'selected' ) ){
 			// already selected , doing nothing
 		} else {
-			o .$a .siblings( 'a' ).removeClass( 'selected').end()
-			$( '> section' , 'div.main' ) .vload ( o .$a .attr( 'href' ) )
-				.done ( function (){
-					o .$a .addClass( 'selected')
-				})
+			$my_section.triggerHandler( 'unload')
+			$a.siblings( 'a' ).removeClass( 'selected')
+
+			$my_section.vload(
+				$a.attr( 'href' )
+			).done( function (){
+				$a.addClass( 'selected')
+			})
 		}
 	} // click
 )
 
-$( 'a[href$="/tweets"]' , g.$my_nav ).click() // default
+$( 'a[href$="/tweets"]' , $my_nav ).click() // default
 
 </script>
 
