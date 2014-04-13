@@ -4,16 +4,11 @@ ul.tweet_list {
 	margin : 0;
 	list-style: none;
 }
-ul.tweet_list > li {
+li.tweet {
 	padding: 1em 0;
 }
-ul.tweet_list > li:not( :first-child ) {
+li.tweet:not( :first-child ) {
 	border-top: 1px solid #eaeaea;
-}
-ul.tweet_list textarea {
-	height: 10em;
-	width: 420px;
-	resize: none;
 }
 li.tweet label {
 	display: inline-block;
@@ -24,7 +19,14 @@ li.tweet label ul {
 	list-style: none ;
 }
 li.tweet label li {
-	opacity : 0.7;
+	opacity : 0.8;
+	position: relative;
+}
+li.tweet label textarea {
+	height: 100%;
+	width: 40em;
+	resize: none;
+	background-color: transparent;
 }
 </style>
 
@@ -93,10 +95,10 @@ $.fn.tweet = function( options ){
 		$.extend( o , options )
 
 		o.updated_at && $( 'li.updat' , this ).show().find( 'span' ).html(
-			new Date( o.updated_at )
+			new Date( o.updated_at ).toUTCString()
 		)
 		o.created_at && $( 'li.creat' , this ).show().find( 'span' ).html(
-			new Date( o.created_at )
+			new Date( o.created_at ).toUTCString()
 		)
 		o.id && $( 'li.delete' , this ).show()
 		o.mytext && $( 'textarea' , this ).val(
@@ -107,14 +109,19 @@ $.fn.tweet = function( options ){
 	.append(
 		$( '<label/>' ).append(
 			$( '<ul/>').append(
-				'<li class="remoteip">remote_addr: <span>{0}</span>'.f(
-					o.remote_addr
+				$( '<li>' ).css({
+					background: 'url(/assets/anon-user.png) 0 0 no-repeat' ,
+					display: 'inline-block' ,
+					'padding-left': 80 ,
+					height: 80
+				}).append(
+					'<textarea placeholder="click a new tweet"/>'
 				) ,
+				'<li><span>' + o.remote_addr + '</span>' ,
 				'<li class="updat" style="display:none">updated: <span></span>',
 				'<li class="creat" style="display:none">created: <span></span>',
 				'<li class="delete" style="display:none"><a href="javascript:void(0)">Delete</a>'
-			) ,
-			'<textarea placeholder="click a new tweet"/>'
+			) // append
 		) // append
 	) // append
 	.triggerHandler( 'options' , o )
