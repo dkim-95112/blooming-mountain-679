@@ -65,35 +65,62 @@ $.fn.tweet = function( options ){
 		$mytweet : this
 	} , options)
 
-	return this.attr({ id: o.id })
-	.on( 'focus' , 'textarea' , function (){
+	return o.$mytweet.attr({ id: o.id })
+	.on( 'focus.tweet' , 'textarea' , function (){
 		o.initialText = this.value
 	})
 	.on( 'blur' , 'textarea' , function (){
-		if( this.value === o.initialText ){
+		if( this.value === o.initialText ){ // no change
 			return false
 		}
-		$( o.$mytweet ).vjax( '/tweets' + ( o.id ? '/' + o.id : '' ) , {
-			type : o.id ? 'put' : 'post' ,
-			data : JSON.stringify ({
-				mytext : this.value
+		if( this.value){ // changing
+			$( o.$mytweet ).vjax( '/tweets' + ( o.id ? '/' + o.id : '' ) , {
+				type : o.id ? 'put' : 'post' ,
+				data : JSON.stringify ({
+					mytext : this.value
+				})
+			}).done( function ( data ){
+				if( !data.result){
+					console.log( 'db update failed')
+					return false;
+				}
+				o.$mytweet.triggerHandler( 'options', data.tweet )
+				if( o.$mytweet.index() === 0 ) { // then inserting empty tweet
+					$( '<li class="tweet"/>').tweet({
+						$mylist : o.$mylist ,
+						remote_addr: o.remote_addr
+					}).prependTo(
+						o.$mylist
+					)
+				}
 			})
-		}).done( function ( data ){
-			o.$mytweet.triggerHandler( 'options', data.tweet )
-			if( o.$mytweet.index() === 0 ) { // then inserting empty tweet
-				$( '<li class="tweet"/>').tweet({
-					$mylist : o.$mylist ,
-					remote_addr: o.remote_addr
-				}).prependTo(
-					o.$mylist
-				)
-			}
-		})
+		} else {
+			vAlertDialog({
+				contentHtml: 'Text cannot be empty. Delete ?' ,
+				buttons: [{
+					title: 'Delete' ,
+					callback: function(){
+						$( '.delete a', o.$mytweet ).click()
+					}
+				} , {
+					title: 'Continue Editing' ,
+					callback: function(){
+						var tmp = o.initialText
+						$( 'textarea' , o.$mytweet).focus()
+						o.initialText = tmp
+					}
+				}]
+			})
+		}
 	})
 	.on( 'click' , '.delete a' , function(){
 		$( this ).vjax ( '/tweets/' + o.id , {
 			type : 'delete'
 		}).done ( function ( data ){
+			if( !data.result){
+				console.log( 'db delete failed')
+				return false;
+			}
 			o.$mytweet.remove()
 		})
 	})
