@@ -7,92 +7,78 @@
 	<%= javascript_include_tag "application" %>
 	<%= csrf_meta_tags %>
 
-	<style type="text/css">
-	body {
-		font-family : arial , sans-serif ;
-		color: #333;
-		margin: 0 0 0 220px;
-		position: relative;
-		min-width: 440px;
-	}
-	h1, h3 {
-		margin: 0;
-	}
-	body, div, nav, section, ul, textarea {
-		box-sizing: border-box; -moz-box-sizing: border-box;
-	}
-	nav.main {
-		position: absolute;
-		width: 200px;
-		left: -210px; top: 10px;
-	}
-	nav.main h1 {
-		background: url(/assets/test-logo.png) 8px 1em no-repeat;
-		padding-left: 60px;
-		border-bottom: 1px solid #ccc;
-	}
-	nav.main > * {
-		display: block;
-		padding: 5px 10px;
-	}
-	nav.main a {
-		color: #333;
-		text-decoration: none;
-		opacity: 0.9;
-	}
-	nav.main a:hover {
-		opacity: 1;
-	}
-	nav.main a.selected {
-		opacity: 0.5;
-		cursor: default;
-	}
- 	div.main {
- 		/*position: absolute;
- 		left: 220px;
- 		right: 0;
- 		overflow-x: hidden;*/
- 	}
- 	section.main {
-		position: relative;
-		padding: 10px;
-	}
- 	#left_top_background {
-		position: absolute;
-		left: 0;
-		right: 0;
-		top: 0;
-		bottom: 0;
-		max-height: 1200px;
-		background: url(/assets/desktop2.jpg) repeat-x;
-		z-index: -1;
-		opacity: 0.45;
-	}
-	#bottom_repeating_background {
-		position: absolute;
-		background: url(/assets/desktop2bottom.jpg);
-		top: 1200px;
-		bottom: 0px;
-		width: 100%;
-		z-index: -1;
-		opacity: 0.43;
-	}
-	.vmw-waiting {
-		opacity: 0.5;
-	}
-	.spinner {
-		background: url(/assets/spinnerLarge.gif) no-repeat;
-		width: 60px;
-		height: 60px;
-		display: none;
-		position: absolute;
-		z-index: 1;
-		opacity: 0.5;
-	}
+<style type="text/css">
+body {
+	font-family : arial , sans-serif ;
+	color: #333;
+	min-width: 440px;
+	position: relative;
+}
+body, h1, h3 {
+	margin: 0;
+}
+body, div, nav, section, ul, textarea {
+	box-sizing: border-box; -moz-box-sizing: border-box;
+}
+nav.main {
+	position: absolute;
+	left: 10px; top: 10px;
+	width: 200px;
+	background: url(/assets/clouds2.png) 0 0 no-repeat;
+}
+nav.main h1 {
+	background: url(/assets/ot-logo.png) 8px 1em no-repeat;
+	padding-left: 60px;
+	border-bottom: 1px solid #ccc;
+}
+nav.main > * {
+	display: block;
+	padding: 5px 10px;
+}
+nav.main a {
+	color: #333;
+	text-decoration: none;
+	opacity: 0.9;
+}
+nav.main a:hover {
+	opacity: 1;
+}
+nav.main a.selected {
+	opacity: 0.5;
+	cursor: default;
+}
+body > div.left{
+	position: fixed;
+	left: 0; top: 0; bottom: 0;
+	width: 220px;
+	background-color: #60aeea;
+	z-index: 1;
+}
+body > div.main {
+	position: absolute;
+	left: 220px; top: 0; right: 0;
+}
+section.main {
+	position: relative;
+	padding: 10px;
+}
+.vmw-waiting {
+	opacity: 0.5;
+}
+.spinner {
+	background: url(/assets/spinnerLarge.gif) no-repeat;
+	width: 60px;
+	height: 60px;
+	display: none;
+	position: absolute;
+	z-index: 1;
+	opacity: 0.5;
+}
 </style>
 </head>
 
 <body>
+<div class="left">
 	<nav class="main">
 		<h1>Dave's Portfolio</h1>
 		<a href="/samples/vmware">vmware</a>
@@ -106,13 +92,15 @@
 		<a href="/samples/ots_way">processing 3d canvas</a>
 		<a href="/samples/algos">algorithms</a>
 	</nav>
+</div>
 
-	<div id="left_top_background"></div>
+<!-- 	<div id="left_top_background"></div>
 	<div id="bottom_repeating_background"></div>
-	<div class="spinner"></div>
-	<div class="main">
-		<section style="padding:10px"></section>
-	</div>
+ -->
+<div class="spinner"></div>
+<div class="main">
+	<section style="padding:10px"></section>
+</div>
 </body>
 
 <script>
@@ -183,21 +171,18 @@ String .prototype .f = function (){
 	})
 } // String.prototype.f
 
-function vErrorDialog (
-	options_or_string
-) {
-    var o = {}
-	$ .extend (
-		o , {
-			title : 'Error' ,
-			style : 'x'
-		} ,
-		isContentHtml ( options_or_string ) ? {
-			contentHtml : options_or_string
+function errorDialog(options_or_string) {
+	var o = {}
+	$.extend(o, {
+			title: 'Error',
+			style: 'x'
+		},
+		isContentHtml(options_or_string) ? {
+			contentHtml: options_or_string
 		} : options_or_string
 	) // extend
-    return vAlertDialog ( o )
-} // vErrorDialog
+	return alertDialog(o)
+} // errorDialog
 
 function isContentHtml (
 	v
@@ -207,108 +192,98 @@ function isContentHtml (
 
 // more simple than input dialog, no gray footerbar, center buttons at bottom
 // https://vdc-stg-app-vip.vmware.com/web/standards/-/alert-dialogs
-function vAlertDialog (
-	options_or_string // string or object
-) {
-	var o = {} // a new day
-	$ .extend ( o , {
-		title : 'Confirm' ,
-		style : "info" , // i-info, ?-confirm, !-warn, x-error
-		buttons : [
-			{
-				title : 'Ok',
-				callback : function (
+function alertDialog(options_or_string) {
+	var o = this.o = {}
+	$.extend(o, {
+		title: 'Confirm',
+		style: "info", // i-info, ?-confirm, !-warn, x-error
+		buttons: [{
+				title: 'Ok',
+				callback: function(
 					e
 				) {
-					e .preventDefault (
-					)
+					e.preventDefault()
 				} // callback
 			} // anon
 		] // buttons
-	} , isContentHtml ( options_or_string ) ? {
-		contentHtml : options_or_string
-	} : options_or_string ) // extend
+	}, isContentHtml(options_or_string) ? {
+		contentHtml: options_or_string
+	} : options_or_string) // extend
 
-	o .$dialog = $ .vModalDialog (
-		$ ( '<table/>' ) .css (
-			o .table_css = {
-				'border-collapse' : 'collapse' ,
-				width : 322 , // like min-width for table since it auto expands
-				'max-width' : 496 
-			}
-		) .append (
-			$ ( '<tr style="line-height:1.5em; background-color:#dedede"/>' ) .append ( 
-				o .$titlebar = $ ( '<th class="dragHandle" colspan="100"/>' ) .append (
-					o .title
-				) // titlebar - without icon in alert dialogs, see standards.vmware.com
-			) ,
-			$ ( '<tr/>' ) .append (
-				o .$body_content = $ ( '<td class="vmw-dialog-content"/>' ) .css (
-					o .body_content_css = {
-						padding : '1em 1em 1em 60px' , // room for background icon
-						background : (
-							function (
-							) {
-								return 'white url({0}) no-repeat 15px 15px' .f (
-									[
-										"images/help32x.png" ,
-										"images/warning32x.png" ,
-										"assets/error32x.png"
-									] [
-										o .iconIndex
-									] || "assets/info32x.png"
-								) // format
-							} // anon
-						) ( // param
-							o .iconIndex = o .style .length === 1 ? (
-								'?!x' .indexOf ( o .style )
-							) : (
-								$ .inArray (
-									o .style , [ 'confirm' , 'warn' , 'err' ] 
-								) // inArray
-							) // iconIndex
-						) // background
-					} // body_content_css
-				) .append (
-					o .contentHtml
-				) // $body_content
-			) , // append tr
-			$ ( '<tr/>' ) .append (
-				o .$footer = $ ( '<td colspan="100"/>' ) .css (
-					{
-						'text-align' : 'center' , height : 42 , 'background-color' : 'white'
-					}
-				) .append (
-					$ .map (
-						o .buttons , function (
-							v
-						) {
-							return $ ( '<button class="vmw-button"/>' ) .append (
-								v .title
-							) .one (
-								{
-									click : function (
-										e
-									) {
-										e .preventDefault (
-										)
-										v .callback && v .callback .call (
-											this , e
-										)
-										o .$dialog .triggerHandler (
-											'close'
-										)
-									} // click
-								} // anon
-							) // one
+	return o.$dialog = $('<table/>').modalDialog( o ).css(
+		o.table_css = {
+			'border-collapse': 'collapse',
+			width: 322, // like min-width for table since it auto expands
+			'max-width': 496
+		}
+	).append(
+		$('<tr style="line-height:1.5em; background-color:#dedede"/>').append(
+			o.$titlebar = $('<th class="dragHandle" colspan="100"/>').append(
+				o.title
+			) // titlebar - without icon in alert dialogs, see standards.vmware.com
+		),
+		$('<tr/>').append(
+			o.$body_content = $('<td class="vmw-dialog-content"/>').css(
+				o.body_content_css = {
+					padding: '1em 1em 1em 60px', // room for background icon
+					background: (
+						function() {
+							return 'white url({0}) no-repeat 15px 15px'.f(
+								[
+									"images/help32x.png",
+									"images/warning32x.png",
+									"assets/error32x.png"
+								][
+									o.iconIndex
+								] || "assets/info32x.png"
+							) // format
 						} // anon
-					) // map
-				) // append $footer
-			) // append tr
-		) // append table
-	) // vModalDialog
-    return o .$dialog
-} // vAlertDialog
+					)( // param
+						o.iconIndex = o.style.length === 1 ? (
+							'?!x'.indexOf(o.style)
+						) : (
+							$.inArray(
+								o.style, ['confirm', 'warn', 'err']
+							) // inArray
+						) // iconIndex
+					) // background
+				} // body_content_css
+			).append(
+				o.contentHtml
+			) // $body_content
+		), // append tr
+		$('<tr/>').append(
+			o.$footer = $('<td colspan="100"/>').css({
+				'text-align': 'center',
+				height: 42,
+				'background-color': 'white'
+			}).append(
+				$.map(
+					o.buttons, function(
+						v
+					) {
+						return $('<button class="vmw-button"/>').append(
+							v.title
+						).one({
+								click: function(
+									e
+								) {
+									e.preventDefault()
+									v.callback && v.callback.call(
+										this, e
+									)
+									o.$dialog.triggerHandler(
+										'close'
+									)
+								} // click
+							} // anon
+						) // one
+					} // anon
+				) // map
+			) // append $footer
+		) // append tr
+	).triggerHandler('center')
+} // alertDialog
 
 function isElementInViewport (el) {
     var rect = el.getBoundingClientRect();
@@ -323,82 +298,89 @@ function isElementInViewport (el) {
 }
 
 // using body as context, so call function directly
-$.vModalDialog = function (	$contentHtml , options ){
-	var o = this .o = {}
-	$ .extend ( o , {
-		$body : $( document.body ) .on ({
-			'keyup' : function ( e ){
-				if (
-					e.keyCode === 27  // 'escape' key ?
-				){
-					o.$container .triggerHandler (
+$.fn.modalDialog = function(options) {
+	var o = this.o = {}
+	$.extend(o, {
+		$dialog: this,
+		dialogClass: 'dialog',
+		dialogCss: {
+			position: 'absolute',
+			'z-index': 100
+		},
+		$context: $(document.body),
+		$overlay: $('<div/>'),
+		overlayClass: 'overlay',
+		overlayCss: {
+			position: 'absolute',
+			height: '100%',
+			width: '100%',
+			opacity: '0.3',
+			'z-index': 10,
+			top: 0,
+			left: 0,
+			'background-color': 'black'
+		}
+	}, options) // extend
+
+	return o.$dialog.addClass(
+		o.dialogClass
+	).css(
+		o.dialogCss
+	).appendTo(
+		o.$context.on({
+			'keyup': function(e) {
+				if (e.keyCode === 27) { // 'escape' key ?
+					o.$dialog.triggerHandler(
 						'close'
 					)
 				} // if
 			} // keyup
-		}) , // on
-		$overlay : $( '<div class="overlay"/>' ) .css({
-			position: 'absolute' ,
-			height: '100%' ,
-			width: '100%' ,
-			opacity: '0.3' ,
-			'z-index': 10 ,
-			top: 0 ,
-			left: 0 ,
-			'background-color': 'black'
-		}) ,
-		$container : $( '<div class="container"/>' ) .css({
-			position : 'absolute' ,
-			'z-index' : 100
-		}) .one ({
-			close : function ( e ){
-				o.$overlay .remove ()
-				o.$container .triggerHandler ( 'beforeClose' )
-				return o.$container .remove ()
-			} // close
-		}) .on ( 'mousedown' , '.dragHandle' , function ( e ){ // starting drag
-			o.pageX0 = e.pageX // relative to doc.body ?
-			o.pageY0 = e.pageY
-			o.offset0 = o.$container .offset ()
-			o.$body .on ({
-				'mousemove.dragging' : function ( e	){
-					// dragging dialog into right edge will collapse width
-					// so stopping when right side hits containing side
-					o.$container .offset ({
-						top : o.offset0 .top + ( e.pageY - o.pageY0 ) ,
-						left : o.offset0 .left + ( e.pageX - o.pageX0 )
-					})
-				} , // mousemove
-				'mouseup.dragging' : function (	e ) {
-					o.$body .off ( '.dragging'	)
-				} // mouseup
-			}) // on body
-		}) .on ({
-			center : function (){
-				var page = o.$body [0] .getBoundingClientRect()
-				var $w = $( window )
-				var w = Math.min ( $w.width () , page.width )
-				var h = Math.min ( $w.height () , page.height )
-				return o.$container .css ( o.eMouse ? {
-					// with mouse event, try to center button under click
-				} : {
-					// no mouse event, just center dialog
-					top : ( h - o.$container.outerHeight() ) / 2 - page.top,
-					left : ( w - page.left - o.$container.outerWidth() ) / 2
-				}) // css
-			} // center
-		}) // on
-	} , options ) // extend
-
-	return o.$container .appendTo (
-		o.$body .append ( o.$overlay )
-	) .end () .append (
-		$contentHtml
-	) .triggerHandler (
-		'center'
-	)
-} // vModalDialog
-
+		}).append(
+			o.$overlay.addClass(
+				o.overlayClass
+			).css(
+				o.overlayCss
+			)
+		)
+	).end().one({
+		close: function(e) {
+			o.$dialog.triggerHandler('beforeClose')
+			o.$overlay.remove()
+			return o.$dialog.remove()
+		}
+	}).on('mousedown', '.dragHandle', function(e) { // starting drag
+		o.pageX0 = e.pageX // relative to doc.body ?
+		o.pageY0 = e.pageY
+		o.offset0 = o.$dialog.offset()
+		o.$context.on({
+			'mousemove.dragging': function(e) {
+				// dragging dialog into right edge will collapse width
+				// so stopping when right side hits containing side
+				o.$dialog.offset({
+					top: o.offset0.top + (e.pageY - o.pageY0),
+					left: o.offset0.left + (e.pageX - o.pageX0)
+				})
+			}, // mousemove
+			'mouseup.dragging': function(e) {
+				o.$context.off('.dragging')
+			} // mouseup
+		}) // on body
+	}).on({
+		center: function() {
+			var page = o.$context[0].getBoundingClientRect()
+			var $w = $(window)
+			var w = Math.min($w.width(), page.width)
+			var h = Math.min($w.height(), page.height)
+			return o.$dialog.css(o.eMouse ? {
+				// with mouse event, try to center button under click
+			} : {
+				// no mouse event, just center dialog
+				top: (h - o.$dialog.outerHeight()) / 2 - page.top,
+				left: (w - page.left - o.$dialog.outerWidth()) / 2
+			}) // css
+		} // center
+	})
+} // modalDialog
 
 var $my_section = $( '> section' , 'div.main' );
 var $my_nav = $( 'nav.main').on(
@@ -421,7 +403,7 @@ var $my_nav = $( 'nav.main').on(
 	} // click
 )
 
-$( 'a[href$="/tweets"]' , $my_nav ).click() // default
+$( 'a[href$="/samples/uicontrols"]' , $my_nav ).click() // default
 
 </script>
 
