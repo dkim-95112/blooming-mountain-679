@@ -1,36 +1,41 @@
+<header>
+	<h1>UI Controls</h1>
+	<h3>
+		jQuery, modal dialog, HTMLElement.getBoundingClientRect
+	</h3>
+</header>
+
 <div style="min-height:300px">
 	<button class="alert" style="position:relative; top:90px;left:40px;">
-		alert dialog
+		Click for modal dialog - info icon
 	</button>
-	<button class="error" style="position:relative; left: 100px;">
-		error dialog
+	<button class="error">
+		Click for a modal dialog - error icon
 	</button>
 </div>
 <style>
 button:hover {
 	cursor: pointer;
 }
-button {
-	font-size: 14px;
+button.alert, button.error {
+	font-size: 1em;
+	height: 3em;
 }
 </style>
 
 <script>
-$( document ) .ready ( function () {
-
-	$( 'button.alert' ).click( function ( eMouse ) {
-		alertDialog ({
-			contentHtml: 'hi alert' ,
-			$context: $('.main section')
+$(document).ready(function() {
+	$('button.alert').click(function(e) {
+		alertDialog({
+			contentHtml: 'hi alert',
+			eMouseClick: e // for positioning under cursor
 		})
-//			.triggerHandler ( 'position_default_button_under_cursor' , [ e ])
 	})
-	$( 'button.error' ).click( function ( eMouse ) {
-		errorDialog ({
+	$('button.error').click(function(e) {
+		errorDialog({
 			contentHtml: 'hi error',
-			$context: $('.main section')
+			eMouseClick: e // for positioning under cursor
 		})
-//			.triggerHandler ( 'position_default_button_under_cursor' , [ e ])
 	})
-} ) // ready
+}) // ready
 </script>

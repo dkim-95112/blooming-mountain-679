@@ -9,10 +9,11 @@
 
 <style type="text/css">
 body {
-	font-family : arial , sans-serif ;
-	color: #333;
-	min-width: 440px;
 	position: relative;
+	min-width: 440px;
+	padding-left: 220px;
+	font-family : arial , sans-serif;
+	color: #333;
 }
 body, h1, h3 {
 	margin: 0;
@@ -74,6 +75,29 @@ section.main {
 	z-index: 1;
 	opacity: 0.5;
 }
+.myDialog {
+	position: absolute;
+	z-index: 100;
+}
+.myDialog > .head {
+	background-color: #ccc;
+}
+.myDialog > .body {
+	background-color: white;
+}
+.myDialog > .foot {
+	background-color: white;
+}
+.myOverlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 100%;
+	opacity: 0.3;
+	z-index: 10;
+	background-color: black;
+}
 </style>
 </head>
 
@@ -81,7 +105,7 @@ section.main {
 <div class="left">
 	<nav class="main">
 		<h1>Dave's Portfolio</h1>
-		<a href="/samples/vmware">vmware</a>
+		<a href="/samples/vmware" title="development screenshots">vmware</a>
 		<a href="/samples/etrade">etrade samples</a>
 		<a href="/tweets">ip twitter</a>
 		<a href="/samples/uicontrols">modal dialog</a>
@@ -98,9 +122,7 @@ section.main {
 	<div id="bottom_repeating_background"></div>
  -->
 <div class="spinner"></div>
-<div class="main">
-	<section style="padding:10px"></section>
-</div>
+<section class="main" style="padding:10px"></section>
 </body>
 
 <script>
@@ -123,29 +145,29 @@ $.fn.vjax = function ( url , options ){
 		type : 'get' , // defaulting
 		dataType : 'json' , // expecting from server
 		context : this , // jQuery.ajax() option for jqXHR.done/always/...
-		beforeSend : function ( jqXHR ){
+		beforeSend: function(jqXHR) {
 			// expecting atomic DOM access within this handler
 			// last request per DOM element wins
 			o.jqXHR && o.jqXHR.abort() // aborting pending if any
 			o.jqXHR = jqXHR
-			o.context.addClass( 'vmw-waiting' )
-			var target = o.context[ 0].getBoundingClientRect()
+			o.context.addClass('vmw-waiting')
+			var target = o.context[0].getBoundingClientRect()
 			var doc = document.documentElement
-			var height = Math.min( target.bottom , doc.clientHeight ) -
-				Math.max( target.top , 0 )
-			var width = Math.min( target.right , doc.clientWidth ) -
-				Math.max( target.left , 0 )
+			var height = Math.min(target.bottom, doc.clientHeight) -
+				Math.max(target.top, 0)
+			var width = Math.min(target.right, doc.clientWidth) -
+				Math.max(target.left, 0)
 			var offset = o.context.offset()
-			var top = Math.max( offset.top , document.body.scrollTop )
-			var left = Math.max( offset.left , document.body.scrollLeft )
-			$( '> .spinner' , document.body ).css ({
-				top : top + height/2 - 30 ,
-				left : left + width/2 - 30 -
-					parseInt( $( document.body ).css( 'margin-left') )
+			var top = Math.max(offset.top, document.body.scrollTop)
+			var left = Math.max(offset.left, document.body.scrollLeft)
+			$('> .spinner', document.body).css({
+				top: top + height / 2 - 30 -
+					parseInt($(document.body).css('margin-top')),
+				left: left + width / 2 - 30 -
+					parseInt($(document.body).css('margin-left'))
 
-			})
-			.show()
-		} ,
+			}).show()
+		},
 		complete : function (){
 			o.jqXHR = null // resetting handle
 			o.context.removeClass( 'vmw-waiting' )
@@ -164,225 +186,202 @@ $.fn.vjax = function ( url , options ){
 	return $.ajax( $.extend ( o , options ) )
 } // vjax
 
-String .prototype .f = function (){
+String.prototype.f = function() {
 	var a = arguments
-	return this .replace ( /{(\d+)}/g , function ( m , n ){ 
-		return a [ n ]
+	return this.replace(/{(\d+)}/g, function(m, n) {
+		return a[n]
 	})
 } // String.prototype.f
 
-function errorDialog(options_or_string) {
+function errorDialog(options) {
 	var o = {}
+	if (isContentHtml(options)) { // allow optionsHtml in first parameter
+		o.contentHtml = options
+		options = null
+	}
 	$.extend(o, {
-			title: 'Error',
-			style: 'x'
-		},
-		isContentHtml(options_or_string) ? {
-			contentHtml: options_or_string
-		} : options_or_string
-	) // extend
+		title: 'Error',
+		style: 'x'
+	}, options)
 	return alertDialog(o)
 } // errorDialog
 
-function isContentHtml (
-	v
-) {
+function isContentHtml(v) {
 	return typeof v === 'string' || v instanceof $
 } // isContentHtml
 
-// more simple than input dialog, no gray footerbar, center buttons at bottom
-// https://vdc-stg-app-vip.vmware.com/web/standards/-/alert-dialogs
-function alertDialog(options_or_string) {
+function alertDialog(options) { // now a global container
 	var o = this.o = {}
+	if( isContentHtml(options)){ // allow contentHtml in first parameter
+		o.contentHtml = options
+		options = null
+	}
 	$.extend(o, {
 		title: 'Confirm',
 		style: "info", // i-info, ?-confirm, !-warn, x-error
 		buttons: [{
-				title: 'Ok',
-				callback: function(
-					e
-				) {
-					e.preventDefault()
-				} // callback
-			} // anon
-		] // buttons
-	}, isContentHtml(options_or_string) ? {
-		contentHtml: options_or_string
-	} : options_or_string) // extend
-
-	return o.$dialog = $('<table/>').modalDialog( o ).css(
-		o.table_css = {
-			'border-collapse': 'collapse',
-			width: 322, // like min-width for table since it auto expands
-			'max-width': 496
-		}
-	).append(
-		$('<tr style="line-height:1.5em; background-color:#dedede"/>').append(
-			o.$titlebar = $('<th class="dragHandle" colspan="100"/>').append(
-				o.title
-			) // titlebar - without icon in alert dialogs, see standards.vmware.com
-		),
-		$('<tr/>').append(
-			o.$body_content = $('<td class="vmw-dialog-content"/>').css(
-				o.body_content_css = {
-					padding: '1em 1em 1em 60px', // room for background icon
-					background: (
-						function() {
-							return 'white url({0}) no-repeat 15px 15px'.f(
-								[
-									"images/help32x.png",
-									"images/warning32x.png",
-									"assets/error32x.png"
-								][
-									o.iconIndex
-								] || "assets/info32x.png"
-							) // format
-						} // anon
-					)( // param
-						o.iconIndex = o.style.length === 1 ? (
-							'?!x'.indexOf(o.style)
-						) : (
-							$.inArray(
-								o.style, ['confirm', 'warn', 'err']
-							) // inArray
-						) // iconIndex
-					) // background
-				} // body_content_css
-			).append(
-				o.contentHtml
-			) // $body_content
-		), // append tr
-		$('<tr/>').append(
-			o.$footer = $('<td colspan="100"/>').css({
-				'text-align': 'center',
-				height: 42,
-				'background-color': 'white'
-			}).append(
-				$.map(
-					o.buttons, function(
-						v
-					) {
-						return $('<button class="vmw-button"/>').append(
-							v.title
-						).one({
-								click: function(
-									e
-								) {
-									e.preventDefault()
-									v.callback && v.callback.call(
-										this, e
-									)
-									o.$dialog.triggerHandler(
-										'close'
-									)
-								} // click
-							} // anon
-						) // one
-					} // anon
-				) // map
-			) // append $footer
-		) // append tr
-	).triggerHandler('center')
+			title: 'Ok',
+			callback: function(e) {
+				e.preventDefault()
+			} // callback
+		}] // buttons
+	}, options)
+	return o.$dialog = $('<div/>').modalDialog(o).css({
+		'min-width': 322, // like min-width for table since it auto expands
+		'max-width': 496
+	}).append(
+		$('<div class="head"/>').css({
+			'line-height': '1.5em',
+			'background-color': '#dedede',
+			'font-weight': 'bold',
+			'padding-left': '1em'
+		}).append(o.title),
+		$('<div class="body"/>').css({
+			padding: '1em 1em 1em 60px', // room for background icon
+			background: 'white url({0}) no-repeat 15px 15px'.f(
+				[
+					"images/help32x.png",
+					"images/warning32x.png",
+					"assets/error32x.png"
+				][
+					o.style.length === 1 ? (
+						'?!x'.indexOf(o.style)
+					) : (
+						$.inArray(
+							o.style, ['confirm', 'warn', 'err']
+						) // inArray
+					)
+				] || "assets/info32x.png"
+			) // f
+		}).append(o.contentHtml),
+		$('<div class="foot"/>').css({
+			'text-align': 'center',
+			height: 42,
+			'background-color': 'white'
+		}).append(
+			$.map(o.buttons, function(v) {
+				return $('<button/>').append(v.title).one({
+					click: function(e) {
+						e.preventDefault()
+						v.callback && v.callback.call(this, e)
+						o.$dialog.triggerHandler('close')
+					} // click
+				}) // one
+			}) // map
+		) // append
+	).triggerHandler('center', o)
 } // alertDialog
 
-function isElementInViewport (el) {
-    var rect = el.getBoundingClientRect();
-    return (
-        rect.top >= 0 &&
-        rect.left >= 0 &&
-        rect.bottom <= $(window).height() &&
-	        // or (window.innerHeight || document.documentElement.clientHeight)
-        rect.right <= $(window).width()
-	        // or (window.innerWidth || document.documentElement.clientWidth)
-    );
+$.fn.isInViewport = function(intersectOnly) {
+	var client = this[0].getBoundingClientRect(), // relative to viewport
+		viewport = {
+			height: window.innerHeight || document.documentElement.clientHeight,
+			width: window.innerWidth || document.documentElement.clientWidth
+		},
+		topLeft = client.top >= 0 && client.left >= 0,
+		topRight = client.top >= 0 && client.right <= viewport.width,
+		botLeft = client.bottom <= viewport.height && client.left >= 0,
+		botRight = client.bottom <= viewport.height && client.right <= viewport.width;
+	return intersectOnly ?
+		topLeft || topRight || botLeft || botRight :
+		topLeft && topRight && botLeft && botRight
 }
-
-// using body as context, so call function directly
 $.fn.modalDialog = function(options) {
 	var o = this.o = {}
 	$.extend(o, {
-		$dialog: this,
-		dialogClass: 'dialog',
-		dialogCss: {
-			position: 'absolute',
-			'z-index': 100
-		},
-		$context: $(document.body),
-		$overlay: $('<div/>'),
-		overlayClass: 'overlay',
-		overlayCss: {
-			position: 'absolute',
-			height: '100%',
-			width: '100%',
-			opacity: '0.3',
-			'z-index': 10,
-			top: 0,
-			left: 0,
-			'background-color': 'black'
-		}
+		$myDialog: this,
+		$docBody: $(document.body),
+		$myOverlay: $('<div class="myOverlay"/>')
 	}, options) // extend
 
-	return o.$dialog.addClass(
-		o.dialogClass
-	).css(
-		o.dialogCss
+	function center(options) {
+		if (options.eMouseClick) { // positioning button under cursor
+			o.$myButton = $('button', o.$myDialog)
+			var buttonOffset = o.$myButton.offset()
+			var dialogOffset = o.$myDialog.offset()
+			var buttonPosition = {
+				top: buttonOffset.top - dialogOffset.top,
+				left: buttonOffset.left - dialogOffset.left
+			}
+			var button = {
+				width: o.$myButton.outerWidth(),
+				height: o.$myButton.outerHeight()
+			}
+			return {
+				top: Math.max(
+					document.body.scrollTop,
+					o.eMouseClick.pageY - buttonPosition.top - button.height / 2
+				),
+				left: Math.max(
+					document.body.scrollLeft,
+					o.eMouseClick.pageX - buttonPosition.left - button.width / 2
+				)
+			}
+		} // if
+		// otherwise center dialog in page
+		var viewport = {
+			height: window.innerHeight || document.documentElement.clientHeight,
+			width: window.innerWidth || document.documentElement.clientWidth
+		}
+		var dialog = {
+			height: o.$myDialog.outerHeight(),
+			width: o.$myDialog.outerWidth()
+		}
+		return {
+			top: document.body.scrollTop +
+				Math.max(0, viewport.height / 2 - dialog.height / 2),
+			left: document.body.scrollLeft +
+				Math.max(0, viewport.width / 2 - dialog.width / 2)
+		}
+	} // center
+
+	return o.$myDialog.addClass(
+		'myDialog'
 	).appendTo(
-		o.$context.on({
+		o.$docBody.on({
 			'keyup': function(e) {
 				if (e.keyCode === 27) { // 'escape' key ?
-					o.$dialog.triggerHandler(
+					o.$myDialog.triggerHandler(
 						'close'
 					)
 				} // if
 			} // keyup
 		}).append(
-			o.$overlay.addClass(
-				o.overlayClass
-			).css(
-				o.overlayCss
-			)
+			o.$myOverlay
 		)
 	).end().one({
 		close: function(e) {
-			o.$dialog.triggerHandler('beforeClose')
-			o.$overlay.remove()
-			return o.$dialog.remove()
+			o.$myDialog.triggerHandler('beforeClose')
+			o.$myOverlay.remove()
+			return o.$myDialog.remove()
 		}
 	}).on('mousedown', '.dragHandle', function(e) { // starting drag
-		o.pageX0 = e.pageX // relative to doc.body ?
-		o.pageY0 = e.pageY
-		o.offset0 = o.$dialog.offset()
-		o.$context.on({
+		var pageX0 = e.pageX,
+			pageY0 = e.pageY,
+			offset0 = o.$myDialog.offset();
+		o.$docBody.on({
 			'mousemove.dragging': function(e) {
 				// dragging dialog into right edge will collapse width
 				// so stopping when right side hits containing side
-				o.$dialog.offset({
-					top: o.offset0.top + (e.pageY - o.pageY0),
-					left: o.offset0.left + (e.pageX - o.pageX0)
+				o.$myDialog.offset({
+					top: o.offset0.top + (e.pageY - pageY0),
+					left: o.offset0.left + (e.pageX - pageX0)
 				})
 			}, // mousemove
 			'mouseup.dragging': function(e) {
-				o.$context.off('.dragging')
+				o.$docBody.off('.dragging')
 			} // mouseup
-		}) // on body
+		}) // on
 	}).on({
-		center: function() {
-			var page = o.$context[0].getBoundingClientRect()
-			var $w = $(window)
-			var w = Math.min($w.width(), page.width)
-			var h = Math.min($w.height(), page.height)
-			return o.$dialog.css(o.eMouse ? {
-				// with mouse event, try to center button under click
-			} : {
-				// no mouse event, just center dialog
-				top: (h - o.$dialog.outerHeight()) / 2 - page.top,
-				left: (w - page.left - o.$dialog.outerWidth()) / 2
-			}) // css
+		center: function(e, options) {
+			return o.$myDialog.offset(
+				center(options)
+			) // offset
 		} // center
-	})
+	}) // on
 } // modalDialog
 
-var $my_section = $( '> section' , 'div.main' );
+var $my_section = $('section.main');
 var $my_nav = $( 'nav.main').on(
 	'click' , '> a' , function ( e ){
 		var $a = $( this)
