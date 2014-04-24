@@ -310,8 +310,8 @@ $.fn.modalDialog = function(options) {
 			}
 			return {
 				top: Math.max(
-					document.body.scrollTop,
-					o.eMouseClick.pageY - buttonPosition.top - button.height / 2
+					document.body.scrollTop, // keeping top visible
+					o.eMouseClick.pageY - buttonPosition.top - button.height + 1
 				),
 				left: Math.max(
 					document.body.scrollLeft,
@@ -356,7 +356,7 @@ $.fn.modalDialog = function(options) {
 			o.$myOverlay.remove()
 			return o.$myDialog.remove()
 		}
-	}).on('mousedown', '.dragHandle', function(e) { // starting drag
+	}).on('mousedown', '.head', function(e) { // starting drag
 		var pageX0 = e.pageX,
 			pageY0 = e.pageY,
 			offset0 = o.$myDialog.offset();
@@ -365,8 +365,8 @@ $.fn.modalDialog = function(options) {
 				// dragging dialog into right edge will collapse width
 				// so stopping when right side hits containing side
 				o.$myDialog.offset({
-					top: o.offset0.top + (e.pageY - pageY0),
-					left: o.offset0.left + (e.pageX - pageX0)
+					top: offset0.top + (e.pageY - pageY0),
+					left: offset0.left + (e.pageX - pageX0)
 				})
 			}, // mousemove
 			'mouseup.dragging': function(e) {
