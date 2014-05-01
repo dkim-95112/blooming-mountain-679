@@ -5,25 +5,128 @@
 	</h3>
 </header>
 
-<div style="min-height:300px">
-	<button class="alert" style="position:relative; top:90px;left:40px;">
+
+<section>
+	<style>
+	button:hover {
+		cursor: pointer;
+	}
+	button.alert, button.error {
+		font-size: 1em;
+		height: 3em;
+	}
+	</style>
+	<button class="alert">
 		Click for modal dialog - info icon
 	</button>
 	<button class="error">
 		Click for a modal dialog - error icon
 	</button>
-</div>
-<style>
-button:hover {
-	cursor: pointer;
-}
-button.alert, button.error {
-	font-size: 1em;
-	height: 3em;
-}
-</style>
+</section>
+
+
+<section style="margin-top:1em">
+	<style>
+	table.grid {
+		border:	1px solid #ccc;
+	}
+	table.grid tr:nth-child(even) {
+		background: #eaeaea;
+	}
+	table.grid td:not(:first-child),
+	table.grid th:not(:first-child) {
+		border-left: 1px solid #ccc;
+	}
+	table.grid td {
+		width: 100px;
+	}
+	div.scrollContainer {
+		height: 75px;
+		overflow-y: auto;
+	}
+	</style>
+
+	<h3 style="font-weight:normal">
+		Grid - Scrolling table body with fixed header
+	</h3>
+	<table class="grid">
+		<thead>
+			<tr>
+				<th>1</th>
+				<th>2</th>
+				<th>3</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>a1</td>
+				<td>a2</td>
+				<td>a3</td>
+			</tr>
+			<tr>
+				<td>b1</td>
+				<td>b2</td>
+				<td>b3</td>
+			</tr>
+			<tr>
+				<td>c1</td>
+				<td>c2</td>
+				<td>c3</td>
+			</tr>
+		</tbody>
+	</table>
+</section>
 
 <script>
+$.fn.myGrid = function(options) {
+	var o = this.o = {}
+	$.extend(o, {
+		$table_tag: this, // required
+		$thead_tag: $('thead', this).detach(),
+		$tbody_tag: $('tbody', this).detach(),
+		$my_scroll_container: this.next('div.my_scroll_container')
+	}, options)
+
+	o.$my_scroll_container.length || ( // defaulting
+		o.$my_scroll_container = $('<div class="my_scroll_container"/>')
+			.insertAfter(this)
+	)
+	o.$my_scroll_container.css({
+		'overflow-y': 'auto'
+	}).append( // scrolling body
+		o.$my_scrolling_table = o.$table_tag.clone().append( o.$tbody_tag )
+	)
+	o.$table_tag.append(o.$thead_tag) // fixed head
+
+	this.addClass('grid').off('.grid').on({
+		'options.grid': function(e, options) {
+			if (options.height) {
+				o.$my_scroll_container.css({
+					height: options.height
+				})
+			}
+			if (options.width) {
+				o.$table_tag.css({
+					width: options.width
+				})
+				o.$my_scrolling_table.css({
+					width: options.width
+				})
+				var $th_list = $('tr:last-of-type th', o.$thead_tag)
+				var $td_list = $('tr:first-child td', o.$tbody_tag).each(
+					function(i, td) {
+						$th_list.eq(i).outerWidth(
+							$(td).outerWidth()
+						)
+					}
+				)
+			}
+			return o.$table_tag
+		}
+	}) // on
+	return this.triggerHandler('options', o)
+} // caampDataGrid
+
 $(document).ready(function() {
 	$('button.alert').click(function(e) {
 		alertDialog({
@@ -36,6 +139,10 @@ $(document).ready(function() {
 			contentHtml: 'hi error',
 			eMouseClick: e // for positioning under cursor
 		})
+	})
+	$('table.grid').myGrid({
+		height: 44,
+		width: 300
 	})
 }) // ready
 </script>
