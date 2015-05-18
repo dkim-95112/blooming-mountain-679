@@ -131,9 +131,7 @@ section.main {
 
 <script>
 
-var g = window
-
-$.fn.vload = function ( url , fnDone ){
+$.fn.vload = function ( url ){
 	// returning jqXHR , so no regular chaining
 	return this.vjax( url , {
 		dataType : 'html'
@@ -211,7 +209,7 @@ function errorDialog(options) {
 } // errorDialog
 
 function isContentHtml(v) {
-	return typeof v === 'string' || v instanceof $
+    return typeof v === 'string' || v instanceof $
 } // isContentHtml
 
 function alertDialog(options) { // now a global container
@@ -385,26 +383,24 @@ $.fn.modalDialog = function(options) {
 	}) // on
 } // modalDialog
 
-var $my_section = $('section.main');
-var $my_nav = $( 'nav.main').on(
-	'click' , '> a' , function ( e ){
-		var $a = $( this)
-		e.stopPropagation()
-		e.preventDefault();
-		if ( $a.hasClass( 'selected' ) ){
-			// already selected , doing nothing
-		} else {
-			$my_section.triggerHandler( 'unload')
-			$a.siblings( 'a' ).removeClass( 'selected')
+var $my_nav = $( 'nav.main').on( 'click' , '> a' , function ( e ){
+    var $a = $( this)
+    e.stopPropagation()
+    e.preventDefault();
+    if ( $a.hasClass( 'selected' ) ){
+	// already selected , doing nothing
+    } else {
+	$('section.main').triggerHandler( 'myunload' )
+	$a.siblings( 'a' ).removeClass( 'selected')
 
-			$my_section.vload(
-				$a.attr( 'href' )
-			).done( function (){
-				$a.addClass( 'selected')
-			})
-		}
-	} // click
-)
+	$('section.main').vload(
+	    $a.attr( 'href' )
+	).done( function (){
+	    $a.addClass( 'selected')
+	})
+    }
+} // click
+			       )
 
 $( 'a[href$="/samples/uicontrols"]' , $my_nav ).click() // default
 

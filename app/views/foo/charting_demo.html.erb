@@ -52,6 +52,8 @@ $(document).ready(function(){
 	.css({
 		position : 'relative'
 	})
+
+    var update_line_toid = update_pie_toid = 0;
 	var update_line = function(){
 		$.getJSON('/foo/time_series', function(v){
 			time.push(v.time);
@@ -73,7 +75,7 @@ $(document).ready(function(){
 			var my_text = rline.text(200, 270, 'some svg text');
 			$(my_text[0]).css({'font-size': '14px'});
 
-			setTimeout(update_line, 1000);
+		    update_line_toid = setTimeout(update_line, 1000);
 		})
 	};
 	update_line();
@@ -100,9 +102,14 @@ $(document).ready(function(){
 			var my_text = rpie.text(140, 270, 'more svg text');
 			$(my_text[0]).css({'font-size': '14px'});
 			
-			setTimeout(update_pie, 1000);
+		    update_pie_toid = setTimeout(update_pie, 1000);
 		})
 	};
 	update_pie();
+
+    $("section.main").one( 'myunload' , function( e ){
+	clearTimeout( update_line_toid );
+	clearTimeout( update_pie_toid );
+    })
 })
 </script>
