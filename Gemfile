@@ -1,6 +1,7 @@
 source 'https://rubygems.org'
 
-gem 'rails', '3.2.13'
+#gem 'rails', '3.2.13'
+gem 'rails'
 
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
@@ -42,7 +43,7 @@ gem 'jquery-rails'
 
 group :development, :test do
   # To use debugger
-  gem 'debugger'
+ # gem 'debugger'
 end
 
 gem 'thin'
