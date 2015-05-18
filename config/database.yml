@@ -6,9 +6,9 @@
 development:
   adapter: postgresql
   encoding: unicode
-  database: davidkim
+  database: portfolio
   pool: 5
-  username: portfolio
+  username: dyk
   password:
 #  adapter: sqlite3
 #  database: db/development.sqlite3
