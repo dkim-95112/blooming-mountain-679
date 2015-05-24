@@ -1,84 +1,81 @@
 <header>
-	<h1>UI Controls</h1>
-	<h3>
-		jQuery, modal dialog, HTMLElement.getBoundingClientRect
-	</h3>
+  <h1>UI Controls</h1>
+  <h3>
+    jQuery, modal dialog, HTMLElement.getBoundingClientRect
+  </h3>
 </header>
 
+<style>
+  section {margin-top: 1em}
+  h3 { font-weight: normal }
+</style>
+<section>
+  <style>
+    button:hover {
+    cursor: pointer;
+    }
+    button.alert, button.error {
+    font-size: 1em;
+    height: 3em;
+    }
+  </style>
+  
+  <h3>draggable dialog with page overlay (modal)</h3>
+  <button class="alert">Click for info dialog</button>
+  <button class="error">Click for error dialog</button>
+</section>
 
 <section>
-	<style>
-	button:hover {
-		cursor: pointer;
-	}
-	button.alert, button.error {
-		font-size: 1em;
-		height: 3em;
-	}
-	</style>
-	<button class="alert">
-		Click for modal dialog - info icon
-	</button>
-	<button class="error">
-		Click for a modal dialog - error icon
-	</button>
-</section>
+  <style>
+    table.grid {
+    border:	1px solid #ccc;
+    }
+    table.grid tr:nth-child(even) {
+    background: #eaeaea;
+    }
+    table.grid td:not(:first-child),
+    table.grid th:not(:first-child) {
+    border-left: 1px solid #ccc;
+    }
+    table.grid td {
+    width: 100px;
+    }
+    div.scrollContainer {
+    height: 75px;
+    overflow-y: auto;
+    }
+  </style>
 
+  <h3>grid - scrolling table body with fixed header</h3>
+  <table class="grid">
+    <thead>
+      <tr>
+	<th>1</th>
+	<th>2</th>
+	<th>3</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+	<td>a1</td>
+	<td>a2</td>
+	<td>a3</td>
+      </tr>
+      <tr>
+	<td>b1</td>
+	<td>b2</td>
+	<td>b3</td>
+      </tr>
+      <tr>
+	<td>c1</td>
+	<td>c2</td>
+	<td>c3</td>
+      </tr>
+    </tbody>
+  </table>
 
-<section style="margin-top:1em">
-	<style>
-	table.grid {
-		border:	1px solid #ccc;
-	}
-	table.grid tr:nth-child(even) {
-		background: #eaeaea;
-	}
-	table.grid td:not(:first-child),
-	table.grid th:not(:first-child) {
-		border-left: 1px solid #ccc;
-	}
-	table.grid td {
-		width: 100px;
-	}
-	div.scrollContainer {
-		height: 75px;
-		overflow-y: auto;
-	}
-	</style>
-
-	<h3 style="font-weight:normal">
-		Grid - Scrolling table body with fixed header
-	</h3>
-	<table class="grid">
-		<thead>
-			<tr>
-				<th>1</th>
-				<th>2</th>
-				<th>3</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td>a1</td>
-				<td>a2</td>
-				<td>a3</td>
-			</tr>
-			<tr>
-				<td>b1</td>
-				<td>b2</td>
-				<td>b3</td>
-			</tr>
-			<tr>
-				<td>c1</td>
-				<td>c2</td>
-				<td>c3</td>
-			</tr>
-		</tbody>
-	</table>
-</section>
-
-<script>
-$.fn.myGrid = function(options) {
+    <script>
+    $.fn.myGrid = function(options) {
 	var o = this.o = {}
 	$.extend(o, {
 		$table_tag: this, // required
@@ -125,7 +122,7 @@ $.fn.myGrid = function(options) {
 		}
 	}) // on
 	return this.triggerHandler('options', o)
-} // caampDataGrid
+    } // caampDataGrid
 
 $(document).ready(function() {
 	$('button.alert').click(function(e) {
@@ -146,3 +143,77 @@ $(document).ready(function() {
 	})
 }) // ready
 </script>
+    </section>
+
+
+<section class="three" style="margin-top:1em">
+  <h1>3 column layout</h1>
+  <style>
+    section.three h3 { margin-top:1em }
+    div.three, table.three { width:33%; border: 2px solid lightsalmon }
+    .flotleft { float:left }
+    .flotright { float:right }
+    .inlin { display:inline-block; vertical-align:top }
+    .col1 { width:30%; background:lightgreen }
+    .col2 { width:30%; background:bisque }
+    .col3 { width:30%; background:aquamarine }
+    table.three td { vertical-align:top }
+  </style>
+
+  <h3>float left</h3>
+  <div class="three">
+    <div class="flotleft col1">col1</div>
+    <div class="flotleft col2">col2<br>col2</div>
+    <div class="flotleft col3">col3</div>
+    <div style="clear:both"></div>
+  </div>
+
+  <h3>float right</h3>
+  <div class="three">
+    <div class="flotright col3">col3</div>
+    <div class="flotright col2">col2<br>col2</div>
+    <div class="flotright col1">col1</div>
+    <div style="clear:both"></div>
+  </div>
+
+  <h3>inline-block (no spaces between divs)</h3>
+  <div class="three">
+    <div class="inlin col1">col1</div><div class="inlin col2">col2<br>col2</div><div class="inlin col3">col3</div>
+  </div>
+
+  <h3>mixed float & inline-block</h3>
+  <div class="three">
+    <div class="flotleft col1">col1</div>
+    <div class="inlin col2">col2<br>col2</div>
+    <div class="flotright col3">col3</div>
+    <div style="clear:both"></div>
+  </div>
+
+  <h3>full-height background using nested divs, with relative positioning</h3>
+  <div style="position:relative; border:3px solid cyan; width:33%; left:22%">
+    mask - needs overflow:hidden
+    <div style="position:relative; left:-33%; border:3px solid lightblue; ">mid
+      <div style="position:relative; left:-33%; height:5em; border:3px solid red">left
+      </div>
+    </div>
+  </div>
+
+  <h3>table</h3>
+  <table class="three">
+    <tr>
+      <td class="col1">col1</td>
+      <td class="col2">col2<br>col2</td>
+      <td class="col3">co13</td>
+    </tr>
+  </table>
+
+  <h3>absolute positioning</h3>
+  <style>
+    .abs > div { position:absolute }
+  </style>
+  <div class="three abs" style="position:relative; height:50px">
+    <div class="col1" style="top:0; left:0; bottom:0">col1</div>
+    <div class="col2" style="top:0; left:33%; bottom:0">col2<br>col2</div>
+    <div class="col3" style="top:0; left:66%; bottom:0">col3</div>
+  </div>
+</section>
