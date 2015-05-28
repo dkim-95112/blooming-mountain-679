@@ -407,20 +407,24 @@ function getCookie(cname) {
 	return "";
 }
 var $my_nav = $( 'nav.main').on( 'click' , '> a' , function ( e ){
-    var $a = $( this)
     e.stopPropagation()
-    e.preventDefault();
+	e.preventDefault(); // otherwise href gets followed
+
+	var $a = $( this),
+		jqxhrNav = 0;
     if ( $a.hasClass( 'selected' ) ){
 		// already selected , doing nothing
     } else {
+		jqxhrNav && jqxhrNav.abort()
 		$('section.main').triggerHandler( 'myunload' )
 		$a.siblings( 'a' ).removeClass( 'selected')
 
-		$('section.main').vload(
+		jqxhrNav = $('section.main').vload(
 			$a.attr( 'href' )
 		).done( function (){
 			document.cookie= "myHref=" + $a.attr('href')
 			$a.addClass( 'selected')
+			jqxhrNav = 0
 		})
     }
 } // click
