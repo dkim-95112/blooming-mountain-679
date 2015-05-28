@@ -13,13 +13,14 @@
 		:max-width 500px
 			
 %canvas#my-id{:style => "margin-top:20px"}
-=link_to "javascript source", "/assets/otsway.js", :style => "margin-left:20px"
 
-	
+%pre#mySource{:style => "background:#eee"}
+
 =javascript_include_tag 'processing-1.4.1.js'
 =javascript_include_tag "otsway.js"
 :javascript
 	$(document).ready(function(){
 		$('#my-id').ot().focus()
 		$( 'body').scrollTop( 0 )
+		$('pre#mySource').load( "/assets/otsway.js" )
 	});

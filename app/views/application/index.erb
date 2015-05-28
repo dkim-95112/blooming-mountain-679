@@ -119,12 +119,12 @@ section.main {
       <a href="/samples/etrade">etrade samples</a>
       <a href="/tweets">ip twitter</a>
       <a href="/samples/uicontrols">modal dialog</a>
-      <a href="/webrtc">camera input</a>
       <a href="/foo/charting_demo">svg charts</a>
       <a href="/samples/jquery_plugin">jquery plugin</a>
       <a href="/moviedb">backbone moviedb</a>
       <a href="/samples/ots_way">processing 3d canvas</a>
       <a href="/samples/algos">algorithms</a>
+      <a href="/webrtc">camera input</a>
     </nav>
   </div>
 
@@ -397,27 +397,40 @@ $.fn.modalDialog = function(options) {
 		} // center
 	}) // on
 } // modalDialog
-
+function getCookie(cname) {
+	var name = cname + "=";
+	var ca = document.cookie.split(';');
+	for(var i=0; i<ca.length; i++) {
+		var c = ca[i];
+		while (c.charAt(0)==' ') c = c.substring(1);
+		if (c.indexOf(name) == 0) return c.substring(name.length,c.length);
+	}
+	return "";
+}
 var $my_nav = $( 'nav.main').on( 'click' , '> a' , function ( e ){
     var $a = $( this)
     e.stopPropagation()
     e.preventDefault();
     if ( $a.hasClass( 'selected' ) ){
-	// already selected , doing nothing
+		// already selected , doing nothing
     } else {
-	$('section.main').triggerHandler( 'myunload' )
-	$a.siblings( 'a' ).removeClass( 'selected')
+		$('section.main').triggerHandler( 'myunload' )
+		$a.siblings( 'a' ).removeClass( 'selected')
 
-	$('section.main').vload(
-	    $a.attr( 'href' )
-	).done( function (){
-	    $a.addClass( 'selected')
-	})
+		$('section.main').vload(
+			$a.attr( 'href' )
+		).done( function (){
+			$a.addClass( 'selected')
+			document.cookie= "myHref=" + $a.attr('href')
+		})
     }
 } // click
 			       )
-
-$( 'a[href$="/samples/uicontrols"]' , $my_nav ).click() // default
+var myHref, $nav;
+if( myHref = getCookie("myHref")){
+	$nav = $("a[href='" + myHref + "']" , $my_nav );
+}
+( $nav && $nav.length ? $nav : $("a[ href $= 'uicontrols' ]", $my_nav) ).click()
 
 </script>
 
