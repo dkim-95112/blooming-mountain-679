@@ -54,6 +54,11 @@ $(document).ready(function(){
 	})
 
     var update_line_toid = update_pie_toid = 0;
+    $("section.main").one( 'myunload' , function( e ){
+		clearTimeout( update_line_toid );
+		clearTimeout( update_pie_toid );
+    })
+
 	var update_line = function(){
 		$.getJSON('/foo/time_series', function(v){
 			time.push(v.time);
@@ -107,9 +112,5 @@ $(document).ready(function(){
 	};
 	update_pie();
 
-    $("section.main").one( 'myunload' , function( e ){
-	clearTimeout( update_line_toid );
-	clearTimeout( update_pie_toid );
-    })
 })
 </script>

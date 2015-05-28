@@ -304,7 +304,8 @@ $.fn.modalDialog = function(options) {
 	}, options) // extend
 
 	function center(options) {
-		if (options.eMouseClick) { // got mouse click ? - positionn button under
+		if (options.eMouseClick) { // got mouse click ?
+			// positionn first button under cursor
 			o.$myButton = $('button', o.$myDialog)
 			var buttonOffset = o.$myButton.offset()
 			var dialogOffset = o.$myDialog.offset()
@@ -373,8 +374,6 @@ $.fn.modalDialog = function(options) {
 		o.$docBody.on({
 			'mousemove.dragging': function(e) {
 				if( o.dragThrot ){ 
-					// dragging dialog into right edge will collapse width
-					// so stopping when right side hits containing side
 					o.$myDialog.offset({
 						top: offset0.top + (e.pageY - pageY0),
 						left: offset0.left + (e.pageX - pageX0)
@@ -420,8 +419,8 @@ var $my_nav = $( 'nav.main').on( 'click' , '> a' , function ( e ){
 		$('section.main').vload(
 			$a.attr( 'href' )
 		).done( function (){
-			$a.addClass( 'selected')
 			document.cookie= "myHref=" + $a.attr('href')
+			$a.addClass( 'selected')
 		})
     }
 } // click
