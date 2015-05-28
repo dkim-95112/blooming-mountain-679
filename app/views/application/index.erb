@@ -21,6 +21,14 @@ body, h1, h3 {
 body, div, nav, section, ul, textarea {
 	box-sizing: border-box; -moz-box-sizing: border-box;
 }
+.noselect {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
 nav.main {
 	background: url(/assets/clouds2.png) 0 0 no-repeat;
 	border-radius: 5px;
@@ -105,7 +113,7 @@ section.main {
 <body>
   <div class="left">
     <h1>Dave's Portfolio</h1>
-    <small>Last updated May 24, 2015</small>
+    <small>Last updated May 27, 2015</small>
     <nav class="main">
       <a href="/samples/vmware" title="development screenshots">vmware</a>
       <a href="/samples/etrade">etrade samples</a>
@@ -211,12 +219,12 @@ function isContentHtml(v) {
 } // isContentHtml
 
 function alertDialog(options) { // now a global container
-	var o = this.o = {}
-	if( isContentHtml(options)){ // allow contentHtml in first parameter
+    var o = this.o = {}
+    if( isContentHtml(options)){ // allow contentHtml in first parameter
 		o.contentHtml = options
 		options = null
-	}
-	$.extend(o, {
+    }
+    $.extend(o, {
 		title: 'Confirm',
 		style: "info", // i-info, ?-confirm, !-warn, x-error
 		buttons: [{
@@ -225,11 +233,11 @@ function alertDialog(options) { // now a global container
 				e.preventDefault()
 			} // callback
 		}] // buttons
-	}, options)
-	return o.$dialog = $('<div/>').modalDialog(o).css({
+    }, options)
+    return o.$dialog = $('<div/>').modalDialog(o).css({
 		'min-width': 322, // like min-width for table since it auto expands
 		'max-width': 496
-	}).append(
+    }).append(
 		$('<div class="head"/>').css({
 			'line-height': '1.5em',
 			'background-color': '#dedede',
@@ -269,7 +277,7 @@ function alertDialog(options) { // now a global container
 				}) // one
 			}) // map
 		) // append
-	).triggerHandler('center', o)
+    ).triggerHandler('center', o)
 } // alertDialog
 
 $.fn.isInViewport = function(intersectOnly) {
@@ -291,11 +299,12 @@ $.fn.modalDialog = function(options) {
 	$.extend(o, {
 		$myDialog: this,
 		$docBody: $(document.body),
-		$myOverlay: $('<div class="myOverlay"/>')
+		$myOverlay: $('<div class="myOverlay"/>'),
+		dragTimeout: 100
 	}, options) // extend
 
 	function center(options) {
-		if (options.eMouseClick) { // positioning button under cursor
+		if (options.eMouseClick) { // got mouse click ? - positionn button under
 			o.$myButton = $('button', o.$myDialog)
 			var buttonOffset = o.$myButton.offset()
 			var dialogOffset = o.$myDialog.offset()
@@ -338,7 +347,7 @@ $.fn.modalDialog = function(options) {
 	return o.$myDialog.addClass(
 		'myDialog'
 	).appendTo(
-		o.$docBody.on({
+		o.$docBody.addClass('noselect').on({
 			'keyup': function(e) {
 				if (e.keyCode === 27) { // 'escape' key ?
 					o.$myDialog.triggerHandler(
@@ -353,22 +362,30 @@ $.fn.modalDialog = function(options) {
 		close: function(e) {
 			o.$myDialog.triggerHandler('beforeClose')
 			o.$myOverlay.remove()
+			o.$docBody.removeClass('noselect')
 			return o.$myDialog.remove()
 		}
 	}).on('mousedown', '.head', function(e) { // starting drag
 		var pageX0 = e.pageX,
 			pageY0 = e.pageY,
 			offset0 = o.$myDialog.offset();
+		o.dragThrot = 1
 		o.$docBody.on({
 			'mousemove.dragging': function(e) {
-				// dragging dialog into right edge will collapse width
-				// so stopping when right side hits containing side
-				o.$myDialog.offset({
-					top: offset0.top + (e.pageY - pageY0),
-					left: offset0.left + (e.pageX - pageX0)
-				})
+				if( o.dragThrot ){ 
+					// dragging dialog into right edge will collapse width
+					// so stopping when right side hits containing side
+					o.$myDialog.offset({
+						top: offset0.top + (e.pageY - pageY0),
+						left: offset0.left + (e.pageX - pageX0)
+					})
+					o.dragThrot = 0;
+					o.dragTimeoutId = setTimeout( function(){ o.dragThrot ++ } , o.dragTimeout );
+				}
 			}, // mousemove
 			'mouseup.dragging': function(e) {
+				clearTimeout( o.dragTimeoutId )
+				o.dragTimeoutId = 0
 				o.$docBody.off('.dragging')
 			} // mouseup
 		}) // on

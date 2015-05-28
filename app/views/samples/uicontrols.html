@@ -9,8 +9,12 @@
   section.main section {margin-top: 1em}
   h3 { font-weight: normal }
 </style>
+
 <section>
   <style>
+	ul.uicontrols > li {
+ 	  margin-top: 1em
+	}
     button:hover {
     cursor: pointer;
     }
@@ -18,15 +22,7 @@
     font-size: 1em;
     height: 3em;
     }
-  </style>
-  
-  <h3>draggable dialog with page overlay (modal)</h3>
-  <button class="alert">Click for info dialog</button>
-  <button class="error" style="margin-left:1em">Click for error dialog</button>
-</section>
 
-<section>
-  <style>
     table.grid {
     border:	1px solid #ccc;
     }
@@ -44,36 +40,50 @@
     height: 75px;
     overflow-y: auto;
     }
-  </style>
+</style>
+  
+  <ul class="uicontrols">
+	<li><h3>draggable dialog</h3>
+	  <ul>
+		<li>modal - page overlay, disabling text selection
+		<li>drag timeout throttling
+	  </ul>
+	  <button class="alert">Click for info dialog</button>
+	  <button class="error" style="margin-left:1em">Click for error dialog</button>
 
-  <h3>grid - scrolling table body with fixed header</h3>
-  <table class="grid">
-    <thead>
-      <tr>
-	<th>1</th>
-	<th>2</th>
-	<th>3</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-	<td>a1</td>
-	<td>a2</td>
-	<td>a3</td>
-      </tr>
-      <tr>
-	<td>b1</td>
-	<td>b2</td>
-	<td>b3</td>
-      </tr>
-      <tr>
-	<td>c1</td>
-	<td>c2</td>
-	<td>c3</td>
-      </tr>
-    </tbody>
-  </table>
 
+	<li><h3>data grid</h3>
+	  <ul>
+		<li>fixed header, scrolling table body
+	  </ul>
+	  <table class="grid">
+		<thead>
+		  <tr>
+			<th>1</th>
+			<th>2</th>
+			<th>3</th>
+		  </tr>
+		</thead>
+		<tbody>
+		  <tr>
+			<td>a1</td>
+			<td>a2</td>
+			<td>a3</td>
+		  </tr>
+		  <tr>
+			<td>b1</td>
+			<td>b2</td>
+			<td>b3</td>
+		  </tr>
+		  <tr>
+			<td>c1</td>
+			<td>c2</td>
+			<td>c3</td>
+		  </tr>
+		</tbody>
+	  </table>
+  </ul>
+  
     <script>
     $.fn.myGrid = function(options) {
 	var o = this.o = {}
