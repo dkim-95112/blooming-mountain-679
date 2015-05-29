@@ -113,7 +113,7 @@ section.main {
 <body>
   <div class="left">
     <h1>Dave's Portfolio</h1>
-    <small>Last updated May 28, 2015</small>
+    <small>Last updated May 29, 2015</small>
     <nav class="main">
       <a href="/samples/vmware" title="development screenshots">vmware</a>
       <a href="/samples/etrade">etrade samples</a>
@@ -407,9 +407,6 @@ function getCookie(cname) {
 	return "";
 }
 var $my_nav = $( 'nav.main').on( 'click' , '> a' , function ( e ){
-    e.stopPropagation()
-	e.preventDefault(); // otherwise href gets followed
-
 	var $a = $( this),
 		jqxhrNav = 0;
     if ( $a.hasClass( 'selected' ) ){
@@ -427,6 +424,7 @@ var $my_nav = $( 'nav.main').on( 'click' , '> a' , function ( e ){
 			jqxhrNav = 0
 		})
     }
+	return false // otherwise href gets followed
 } // click
 			       )
 var myHref, $nav;
