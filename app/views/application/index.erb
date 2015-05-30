@@ -76,7 +76,6 @@ section.main {
 	background: url(/assets/spinnerLarge.gif) no-repeat;
 	width: 60px;
 	height: 60px;
-	display: none;
 	position: absolute;
 	z-index: 1;
 	opacity: 0.5;
@@ -128,17 +127,11 @@ section.main {
     </nav>
   </div>
 
-<!-- 	<div id="left_top_background"></div>
-	<div id="bottom_repeating_background"></div>
- -->
-<div class="spinner"></div>
-<section class="main"></section>
+  <section class="main"></section>
 </body>
 
 <script>
-
 $.fn.vload = function ( url ){
-	// returning jqXHR , so no regular chaining
 	return this.vjax( url , {
 		dataType : 'html'
 	}).done ( function ( responseHtml ){
@@ -152,34 +145,37 @@ $.fn.vjax = function ( url , options ){
 		url : url ,
 		type : 'get' , // defaulting
 		dataType : 'json' , // expecting from server
-		context : this , // jQuery.ajax() option for jqXHR.done/always/...
+		context : this , // jquery context for done/always/...
 		beforeSend: function(jqXHR) {
-			// expecting atomic DOM access within this handler
-			// last request per DOM element wins
-			o.jqXHR && o.jqXHR.abort() // aborting pending if any
-			o.jqXHR = jqXHR
 			o.context.addClass('vmw-waiting')
-			var target = o.context[0].getBoundingClientRect()
-			var doc = document.documentElement
-			var height = Math.min(target.bottom, doc.clientHeight) -
-				Math.max(target.top, 0)
-			var width = Math.min(target.right, doc.clientWidth) -
-				Math.max(target.left, 0)
-			var offset = o.context.offset()
-			var top = Math.max(offset.top, document.body.scrollTop)
-			var left = Math.max(offset.left, document.body.scrollLeft)
-			$('> .spinner', document.body).css({
-				top: top + height / 2 - 30 -
-					parseInt($(document.body).css('margin-top')),
-				left: left + width / 2 - 30 -
-					parseInt($(document.body).css('margin-left'))
-
-			}).show()
+			var box = o.context[0].getBoundingClientRect() // relative to viewport
+			var viewport = {
+				height: $( window ).height(),
+				width: $( window ).width()
+			}
+			var visible = {
+				height: Math.min( box.bottom, viewport.height ) - Math.max( box.top, 0 ),
+				width: Math.min( box.right, viewport.width ) - Math.max( box.left, 0 )
+			}
+			if( visible.height > 0 && visible.width > 0 ){
+				$( document.documentElement).append(
+					$( '<div class="spinner">' ).offset( function( index , coords ){
+						var offset = o.context.offset(); // relative to document
+						return {
+							top: offset.top + (
+								box.top >= 0 ? visible.height/2 : o.context.outerHeight() - visible.height/2
+							) - 30,
+							left: offset.left + (
+								box.left >= 0 ? visible.width/2 : o.context.outerWidth() - visible.width/2
+							) - 30
+						} // return
+					})
+				) // append
+			} // if
 		},
 		complete : function (){
-			o.jqXHR = null // resetting handle
-			o.context.removeClass( 'vmw-waiting' )
-			$( '> .spinner' , document.body ).hide()
+			$( '> .spinner' , document.documentElement ).remove()
+			o.context.removeClass('vmw-waiting')
 		}
 	})
 
@@ -190,7 +186,6 @@ $.fn.vjax = function ( url , options ){
 			processData : false
 		})
 
-	// returning jqXHR object , so no regular chaining
 	return $.ajax( $.extend ( o , options ) )
 } // vjax
 
@@ -280,20 +275,6 @@ function alertDialog(options) { // now a global container
     ).triggerHandler('center', o)
 } // alertDialog
 
-$.fn.isInViewport = function(intersectOnly) {
-	var client = this[0].getBoundingClientRect(), // relative to viewport
-		viewport = {
-			height: window.innerHeight || document.documentElement.clientHeight,
-			width: window.innerWidth || document.documentElement.clientWidth
-		},
-		topLeft = client.top >= 0 && client.left >= 0,
-		topRight = client.top >= 0 && client.right <= viewport.width,
-		botLeft = client.bottom <= viewport.height && client.left >= 0,
-		botRight = client.bottom <= viewport.height && client.right <= viewport.width;
-	return intersectOnly ?
-		topLeft || topRight || botLeft || botRight :
-		topLeft && topRight && botLeft && botRight
-}
 $.fn.modalDialog = function(options) {
 	var o = this.o = {}
 	$.extend(o, {
@@ -319,28 +300,28 @@ $.fn.modalDialog = function(options) {
 			}
 			return {
 				top: Math.max(
-					document.body.scrollTop, // keeping top visible
+					document.body.scrollTop, // keepn top visible
 					o.eMouseClick.pageY - buttonPosition.top - button.height + 1
 				),
 				left: Math.max(
-					document.body.scrollLeft,
+					document.body.scrollLeft, // keepn left visible
 					o.eMouseClick.pageX - buttonPosition.left - button.width / 2
 				)
 			}
 		} // if
 		// otherwise center dialog in page
 		var viewport = {
-			height: window.innerHeight || document.documentElement.clientHeight,
-			width: window.innerWidth || document.documentElement.clientWidth
+			height: $( window ).height(),
+			width: $( window ).width()
 		}
 		var dialog = {
 			height: o.$myDialog.outerHeight(),
 			width: o.$myDialog.outerWidth()
 		}
 		return {
-			top: document.body.scrollTop +
+			top: document.body.scrollTop + // keepn top visible
 				Math.max(0, viewport.height / 2 - dialog.height / 2),
-			left: document.body.scrollLeft +
+			left: document.body.scrollLeft + // keepn left visible
 				Math.max(0, viewport.width / 2 - dialog.width / 2)
 		}
 	} // center
@@ -406,16 +387,19 @@ function getCookie(cname) {
 	}
 	return "";
 }
-var $my_nav = $( 'nav.main').on( 'click' , '> a' , function ( e ){
-	var $a = $( this),
-		jqxhrNav = 0;
+
+var jqxhrNav = 0;
+$( 'nav.main').on( 'click' , '> a' , function ( e ){
+	var $a = $( this);
     if ( $a.hasClass( 'selected' ) ){
 		// already selected , doing nothing
     } else {
-		jqxhrNav && jqxhrNav.abort()
-		$('section.main').triggerHandler( 'myunload' )
-		$a.siblings( 'a' ).removeClass( 'selected')
-
+		if( jqxhrNav ){
+			jqxhrNav.abort() // cancel pending
+		} else {
+			$a.siblings( 'a' ).removeClass( 'selected')
+			$('section.main').triggerHandler( 'myunload' ) // unload previous
+		}
 		jqxhrNav = $('section.main').vload(
 			$a.attr( 'href' )
 		).done( function (){
@@ -427,11 +411,11 @@ var $my_nav = $( 'nav.main').on( 'click' , '> a' , function ( e ){
 	return false // otherwise href gets followed
 } // click
 			       )
-var myHref, $nav;
+var myHref, $prevNav;
 if( myHref = getCookie("myHref")){
-	$nav = $("a[href='" + myHref + "']" , $my_nav );
+	$prevNav = $("a[href='" + myHref + "']" , 'nav.main' );
 }
-( $nav && $nav.length ? $nav : $("a[ href $= 'uicontrols' ]", $my_nav) ).click()
+( $prevNav && $prevNav.length ? $prevNav : $("a[ href $= 'uicontrols' ]", 'nav.main' ) ).click()
 
 </script>
 
