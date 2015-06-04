@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
 <head>
 	<title>Dave's Portfolio</title>
@@ -7,13 +7,16 @@
 	<%= javascript_include_tag "application" %>
 	<%= csrf_meta_tags %>
 
-<style type="text/css">
+<style>
+html {
+    position: relative; /* modal overlay anchored here now */
+	font-family : arial , sans-serif;
+	color: #111;
+}
 body {
-	position: relative;
 	min-width: 440px;
 	padding-left: 220px;
-	font-family : arial , sans-serif;
-	color: #333;
+	opacity: 0.98;
 }
 body, h1, h3 {
 	margin: 0;
@@ -21,7 +24,7 @@ body, h1, h3 {
 body, div, nav, section, ul, textarea {
 	box-sizing: border-box; -moz-box-sizing: border-box;
 }
-.noselect {
+.noselect { /* not selecting text, for modal dialog */
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -khtml-user-select: none;
@@ -29,46 +32,41 @@ body, div, nav, section, ul, textarea {
     -ms-user-select: none;
     user-select: none;
 }
-nav.main {
-	background: url(/assets/clouds2.png) 0 0 no-repeat;
-	border-radius: 5px;
-}
-div.left h1 {
-	background: url(/assets/ot-logo.png) 8px 8px no-repeat;
-	padding-left: 60px;
-	border-bottom: 1px solid #ccc;
-}
-nav.main > * {
-	display: block;
-	padding: 5px 10px;
-}
-nav.main a {
-	color: #333;
-	text-decoration: none;
-	opacity: 0.9;
-}
-nav.main a:hover {
-	opacity: 1;
-}
-nav.main a.selected {
-	opacity: 0.5;
-	cursor: default;
-}
-body > div.left{
+
+section.navbar {
 	position: fixed;
 	left: 0; top: 0; bottom: 0;
 	width: 220px; padding: 2px;
 	background-color: #7ab6ff;
-	z-index: 1;
 }
-body > div.main {
-	position: absolute;
-	left: 220px; top: 0; right: 0;
+section.navbar > h1 {
+	background: url(/assets/ot-logo.png) 8px 8px no-repeat;
+	padding-left: 60px;
+	border-bottom: 1px solid #ccc;
 }
+section.navbar > nav {
+	background: url(/assets/clouds2.png) 0 0 no-repeat;
+	border-radius: 5px;
+}
+section.navbar > nav > a {
+	display: block;
+	padding: 5px 10px;
+	text-decoration: none;
+	color: #111;
+	opacity: 0.9;
+}
+section.navbar > nav > a:hover {
+	opacity: 1;
+}
+section.navbar > nav > a.selected {
+	opacity: 0.5;
+	cursor: default;
+}
+
 section.main {
-	position: relative;
 	padding: 10px;
 }
+
 .vmw-waiting {
 	opacity: 0.5;
 }
@@ -80,6 +78,7 @@ section.main {
 	z-index: 1;
 	opacity: 0.5;
 }
+
 .myDialog {
 	position: absolute;
 	z-index: 100;
@@ -96,12 +95,11 @@ section.main {
 .myDialog > .foot {
 	background-color: white;
 }
+
 .myOverlay {
 	position: absolute;
-	top: 0;
-	left: 0;
-	height: 100%;
-	width: 100%;
+	top: 0;	left: 0;
+	height: 100%; width: 100%;
 	opacity: 0.3;
 	z-index: 10;
 	background-color: black;
@@ -110,22 +108,21 @@ section.main {
 </head>
 
 <body>
-  <div class="left">
-    <h1>Dave's Portfolio</h1>
-    <small>Last updated May 29, 2015</small>
-    <nav class="main">
-      <a href="/samples/vmware" title="development screenshots">vmware</a>
-      <a href="/samples/etrade">etrade samples</a>
-      <a href="/tweets">ip twitter</a>
-      <a href="/samples/uicontrols">modal dialog</a>
-      <a href="/foo/charting_demo">svg charts</a>
-      <a href="/samples/jquery_plugin">jquery plugin</a>
-      <a href="/moviedb">backbone moviedb</a>
-      <a href="/samples/ots_way">processing 3d canvas</a>
-      <a href="/samples/algos">algorithms</a>
-      <a href="/webrtc">camera input</a>
-    </nav>
-  </div>
+  <section class="navbar">
+	<h1>Dave's Portfolio</h1>
+	<small>Last updated June 3, 2015</small>
+	<nav>
+	  <a href="/samples/vmware" title="development screenshots">vmware</a>
+	  <a href="/samples/etrade">etrade samples</a>
+	  <a href="/tweets">ip twitter</a>
+	  <a href="/samples/uicontrols">modal dialog</a>
+	  <a href="/foo/charting_demo">svg charts</a>
+	  <a href="/samples/jquery_plugin">jquery plugin</a>
+	  <a href="/moviedb">backbone moviedb</a>
+	  <a href="/samples/ots_way">processing 3d canvas</a>
+	  <a href="/samples/algos">algorithms</a>
+	</nav>
+  </section>
 
   <section class="main"></section>
 </body>
@@ -225,7 +222,7 @@ function alertDialog(options) { // now a global container
 		buttons: [{
 			title: 'Ok',
 			callback: function(e) {
-				e.preventDefault()
+				return false // prevent default processing
 			} // callback
 		}] // buttons
     }, options)
@@ -265,9 +262,9 @@ function alertDialog(options) { // now a global container
 			$.map(o.buttons, function(v) {
 				return $('<button/>').append(v.title).one({
 					click: function(e) {
-						e.preventDefault()
 						v.callback && v.callback.call(this, e)
 						o.$dialog.triggerHandler('close')
+						return false // prevent default processing
 					} // click
 				}) // one
 			}) // map
@@ -276,16 +273,15 @@ function alertDialog(options) { // now a global container
 } // alertDialog
 
 $.fn.modalDialog = function(options) {
-	var o = this.o = {}
-	$.extend(o, {
+	var o = {}
+	$.extend( o, {
 		$myDialog: this,
-		$docBody: $(document.body),
 		$myOverlay: $('<div class="myOverlay"/>'),
 		dragTimeout: 100
 	}, options) // extend
 
-	function center(options) {
-		if (options.eMouseClick) { // got mouse click ?
+	function center( options ){
+		if( options.eMouseClick ){ // got mouse click ?
 			// positionn first button under cursor
 			o.$myButton = $('button', o.$myDialog)
 			var buttonOffset = o.$myButton.offset()
@@ -329,7 +325,7 @@ $.fn.modalDialog = function(options) {
 	return o.$myDialog.addClass(
 		'myDialog'
 	).appendTo(
-		o.$docBody.addClass('noselect').on({
+		$( document.documentElement ).addClass('noselect').on({
 			'keyup': function(e) {
 				if (e.keyCode === 27) { // 'escape' key ?
 					o.$myDialog.triggerHandler(
@@ -344,7 +340,7 @@ $.fn.modalDialog = function(options) {
 		close: function(e) {
 			o.$myDialog.triggerHandler('beforeClose')
 			o.$myOverlay.remove()
-			o.$docBody.removeClass('noselect')
+			$( document.documentElement ).removeClass('noselect')
 			return o.$myDialog.remove()
 		}
 	}).on('mousedown', '.head', function(e) { // starting drag
@@ -352,7 +348,7 @@ $.fn.modalDialog = function(options) {
 			pageY0 = e.pageY,
 			offset0 = o.$myDialog.offset();
 		o.dragThrot = 1
-		o.$docBody.on({
+		$( document.documentElement ).on({
 			'mousemove.dragging': function(e) {
 				if( o.dragThrot ){ 
 					o.$myDialog.offset({
@@ -366,7 +362,7 @@ $.fn.modalDialog = function(options) {
 			'mouseup.dragging': function(e) {
 				clearTimeout( o.dragTimeoutId )
 				o.dragTimeoutId = 0
-				o.$docBody.off('.dragging')
+				$( document.documentElement ).off('.dragging')
 			} // mouseup
 		}) // on
 	}).on({
@@ -377,46 +373,53 @@ $.fn.modalDialog = function(options) {
 		} // center
 	}) // on
 } // modalDialog
-function getCookie(cname) {
-	var name = cname + "=";
-	var ca = document.cookie.split(';');
-	for(var i=0; i<ca.length; i++) {
-		var c = ca[i];
-		while (c.charAt(0)==' ') c = c.substring(1);
-		if (c.indexOf(name) == 0) return c.substring(name.length,c.length);
-	}
-	return "";
-}
 
-var jqxhrNav = 0;
-$( 'nav.main').on( 'click' , '> a' , function ( e ){
+var g = {};
+$.extend( g, {
+	jqxhr: 0
+})
+$( 'section.navbar > nav').on( 'click' , '> a' , function ( e ){
 	var $a = $( this);
     if ( $a.hasClass( 'selected' ) ){
 		// already selected , doing nothing
     } else {
-		if( jqxhrNav ){
-			jqxhrNav.abort() // cancel pending
+		if( g.jqxhr ){
+			g.jqxhr.abort() // cancel pending
 		} else {
 			$a.siblings( 'a' ).removeClass( 'selected')
 			$('section.main').triggerHandler( 'myunload' ) // unload previous
 		}
-		jqxhrNav = $('section.main').vload(
+		g.jqxhr = $('section.main').vload(
 			$a.attr( 'href' )
 		).done( function (){
 			document.cookie= "myHref=" + $a.attr('href')
 			$a.addClass( 'selected')
-			jqxhrNav = 0
-		})
-    }
+			g.jqxhr = 0
+		}) // done
+    } // if
 	return false // otherwise href gets followed
-} // click
-			       )
-var myHref, $prevNav;
-if( myHref = getCookie("myHref")){
-	$prevNav = $("a[href='" + myHref + "']" , 'nav.main' );
-}
-( $prevNav && $prevNav.length ? $prevNav : $("a[ href $= 'uicontrols' ]", 'nav.main' ) ).click()
+}) // on click
 
+{ // recall last nav selection from cookie
+	function getCookie(cname) {
+		var name = cname + "=";
+		var ca = document.cookie.split(';');
+		for(var i=0; i<ca.length; i++) {
+			var c = ca[i];
+			while (c.charAt(0)==' ') c = c.substring(1);
+			if (c.indexOf(name) == 0) return c.substring(name.length,c.length);
+		}
+		return "";
+	}
+	(
+		(
+			g.myHref = getCookie("myHref")
+		) && (
+			g.$prevNav = $("a[href='" + g.myHref + "']" , '.navbar' )
+		).length ?
+			g.$prevNav : $("a[ href $= 'uicontrols' ]", '.navbar' )
+	).click()
+}
 </script>
 
 </html>
