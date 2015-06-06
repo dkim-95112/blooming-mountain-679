@@ -379,11 +379,11 @@ $.fn.modalDialog = function(options) {
 	$( '.navbar nav' ).on( 'mouseenter' , function( e ){
 		var throttle = 1,
 			$myNav = $( this ),
-			offset = $myNav.offset(),
 			width = $myNav.outerWidth(),
 			height = $myNav.outerHeight();
  		$myNav.on( 'mousemove.parallax' , function( e ){
 			if( throttle ){
+				var offset = $myNav.offset();
 				var dx = ( e.pageX - offset.left ) / width,
 					dy = ( e.pageY - offset.top ) / height;
 				//$( 'span#pagex' ).text( dx )
