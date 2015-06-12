@@ -52,6 +52,10 @@ ol.uicontrols > li div.scrollContainer {
 	  <button class="alert">Click for info dialog</button>
 	  <button class="error" style="margin-left:1em">Click for error dialog</button>
 
+	<li><h3>cascading select</h3>
+	  <div id="master"></div>
+	  <div id="slave"></div>
+
 
 	<li><h3>data grid</h3>
 	  <ul>
@@ -217,7 +221,56 @@ $.fn.myGrid = function(options) {
 	}).triggerHandler('options', o)
 } // $.fn.myGrid
 
+$.fn.selectOne = function(options) {
+    var o = {}
+    $.extend(o, {
+        $container: this,
+        $select: $('select', this), // showing for multiple
+        $span: $('span', this), // showing for only one
+        list: [ /* [ val0, html0 ], ... */ ],
+    }, options);
+	// default elements
+    o.$select.length || (
+        o.$select = $('<select/>').prependTo(this)
+    )
+    o.$span.length || (
+        o.$span = $('<span/>').appendTo(this)
+    )
+    o.$select.empty().append(
+        $('<option disabled/>').text('Select one'),
+        $.map(o.list, function(v) {
+            return $('<option/>').val(v[0]).html(v[1])[0]
+        })
+    )[
+        o.list.length > 1 ? 'show' : 'hide'
+    ]();
+    o.$span[
+        o.list.length > 1 ? 'hide' : 'show'
+    ]();
+    return o.$container.unbind('.rdd').bind({
+        'revert.rdd': function() {
+            o.$select.val( o.revertVal ).trigger('change')
+			// sync up select & span
+            var selectedHtml = $('option:selected', o.$select).html()
+            o.$span.html(
+                selectedHtml ? (
+					selectedHtml === 'Select one' ? '--' : selectedHtml
+				) : '--'
+			)
+            return o.$container
+        },
+        'clear.rdd': function() {
+            o.$select.val('Select one').trigger('change')
+            o.$span.text('--')
+        },
+        'isModified.rdd': function() {
+            return o.$select.val() !== o.revertVal
+        }
+    }).triggerHandler('revert')
+} // selectOne
+
 $(document).ready(function() {
+	// dialogs
 	$('button.alert').click( function(e) {
 		alertDialog({
 			contentHtml: 'hi alert',
@@ -230,6 +283,40 @@ $(document).ready(function() {
 			eMouseClick: e // for positioning under cursor
 		})
 	})
+	// cascading select
+	var master_list = [
+		['a', 'Animals', [
+			['l', 'Lions'],
+			['t', 'Tigers'],
+			['b', 'Bears']
+		]],
+		['v', 'Vegetables', [
+			['p', 'potato']
+		]],
+		['m', 'Minerals']
+	];
+	$('#master').bind('change', function() {
+		var $master = $(this),
+			slave_list = [];
+		$.extend(
+			slave_list, // init slave
+			$.map(master_list, function(v) {
+				return $('select', $master).val() === v[0] ? v[2] : null
+			})
+		);
+		$('#slave').selectOne({
+			list: $.map(slave_list, function(v) {
+				return [v]
+			}),
+			revertVal: slave_list.length && slave_list[0][0] || 'undefined'
+		})
+	}).selectOne({
+		list: $.map(master_list, function(v) {
+			return [[v[0], v[1]]]
+		}),
+		revertVal: 'a'
+	})
+	// scrolling grid
 	$('table.grid').myGrid({
 		height: 44,
 		width: 300
