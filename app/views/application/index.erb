@@ -15,8 +15,8 @@ html {
 	color: #111;
 }
 body {
-	min-width: 440px;
-	padding-left: 220px;
+	min-width: 500px;
+	padding-left: 210px;
 }
 body, h1, h3 {
 	margin: 0;
@@ -33,32 +33,38 @@ body, div, nav, section, ul, textarea {
     user-select: none;
 }
 
-section.navbar {
+nav.home {
 	position: fixed;
 	left: 0; top: 0; bottom: 0;
-	width: 200px; padding: 2px;
+	width: 190px; padding: 2px;
 	background-color: #7ab6ff;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-transform:scale3d(1,1,1) /* fix issue with scrolling body containing canvas */
 }
-section.navbar > h1 {
+nav.home > h1 {
 	background: url(/assets/ot-logo.png) 8px 8px no-repeat;
 	padding-left: 60px;
 	border-bottom: 1px solid #ccc;
 }
-section.navbar > nav {
+nav.home > ul {
 	background: url(/assets/clouds2.png) 0 0 no-repeat;
 	border-radius: 5px;
+    list-style-type: none;
+    padding-left: 5px;
 }
-section.navbar > nav > a {
-	display: block;
-	padding: 5px 10px;
+nav.home > ul > li {
+    line-height: 1.5em
+}
+nav.home > ul > li > a {
 	text-decoration: none;
 	color: #111;
 	opacity: 0.9;
 }
-section.navbar > nav > a:hover {
+nav.home > ul > li > a:hover {
 	opacity: 1;
 }
-section.navbar > nav > a.selected {
+nav.home > ul > li > a.selected {
 	opacity: 0.5;
 	cursor: default;
 }
@@ -108,23 +114,23 @@ section.main {
 </head>
 
 <body>
-  <section class="navbar">
+  <nav class="home">
 	<h1>Dave's Portfolio</h1>
 	<small>
-	  Last updated June 12, 2015
+	  Last updated June 15, 2015
 	</small>
-	<nav>
-	  <a href="/samples/vmware" title="development screenshots">vmware</a>
-	  <a href="/samples/etrade">etrade samples</a>
-	  <a href="/tweets">ip twitter</a>
-	  <a href="/samples/uicontrols">modal dialog</a>
-	  <a href="/foo/charting_demo">svg charts</a>
-	  <a href="/samples/jquery_plugin">jquery plugin</a>
-	  <a href="/moviedb">backbone moviedb</a>
-	  <a href="/samples/ots_way">processing 3d canvas</a>
-	  <a href="/samples/algos">algorithms</a>
-	</nav>
-  </section>
+	<ul>
+	  <li><a href="/samples/vmware" title="development screenshots">vmware</a>
+	  <li><a href="/samples/etrade">etrade samples</a>
+	  <li><a href="/tweets">ip twitter</a>
+	  <li><a href="/samples/uicontrols">modal dialog</a>
+	  <li><a href="/foo/charting_demo">svg charts</a>
+	  <li><a href="/samples/jquery_plugin">jquery plugin</a>
+	  <li><a href="/moviedb">backbone moviedb</a>
+	  <li><a href="/samples/ots_way">processing 3d canvas</a>
+	  <li><a href="/samples/algos">algorithms</a>
+	</ul>
+  </nav>
 
   <section class="main"></section>
 </body>
@@ -376,20 +382,20 @@ $.fn.modalDialog = function(options) {
 } // modalDialog
 
 { // parallax effect ?
-	$( '.navbar nav' ).on( 'mouseenter' , function( e ){
+	$( 'ul', 'nav.home' ).on( 'mouseenter' , function( e ){
 		var throttle = 1,
-			$myNav = $( this ),
-			width = $myNav.outerWidth(),
-			height = $myNav.outerHeight();
- 		$myNav.on( 'mousemove.parallax' , function( e ){
+			$myul = $( this ),
+			width = $myul.outerWidth(),
+			height = $myul.outerHeight();
+ 		$myul.on( 'mousemove.parallax' , function( e ){
 			if( throttle ){
-				var offset = $myNav.offset();
+				var offset = $myul.offset();
 				var dx = ( e.pageX - offset.left ) / width,
 					dy = ( e.pageY - offset.top ) / height;
 				//$( 'span#pagex' ).text( dx )
 				//$( 'span#pagey' ).text( dy )
 				
-				$myNav.css( 'background-position' , -dx + 'em ' + -dy + 'em' )
+				$myul.css( 'background-position' , -dx + 'em ' + -dy + 'em' )
 				throttle = 0
 				setTimeout( function(){ throttle ++ } , 100 );
 			}
@@ -403,7 +409,7 @@ var g = {};
 $.extend( g, {
 	jqxhr: 0
 })
-$( 'section.navbar > nav').on( 'click' , '> a' , function ( e ){
+$('nav.home').on( 'click' , 'ul > li > a' , function ( e ){
 	var $a = $( this);
     if ( $a.hasClass( 'selected' ) ){
 		// already selected , doing nothing
@@ -411,7 +417,7 @@ $( 'section.navbar > nav').on( 'click' , '> a' , function ( e ){
 		if( g.jqxhr ){
 			g.jqxhr.abort() // cancel pending
 		} else {
-			$a.siblings( 'a' ).removeClass( 'selected')
+			$('a', $a.closest('li').siblings()).removeClass( 'selected')
 			$('section.main').triggerHandler( 'myunload' ) // unload previous
 		}
 		g.jqxhr = $('section.main').vload(
@@ -440,9 +446,9 @@ $( 'section.navbar > nav').on( 'click' , '> a' , function ( e ){
 		(
 			g.myHref = getCookie("myHref")
 		) && (
-			g.$prevNav = $("a[href='" + g.myHref + "']" , '.navbar' )
+			g.$prevNav = $("a[href='" + g.myHref + "']" , 'nav.home' )
 		).length ?
-			g.$prevNav : $("a[ href $= 'uicontrols' ]", '.navbar' )
+			g.$prevNav : $("a[ href $= 'uicontrols' ]", 'nav.home' )
 	).click()
 }
 </script>
