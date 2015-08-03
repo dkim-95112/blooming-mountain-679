@@ -108,17 +108,22 @@ function toggle_my_source(){
 			}) // listenTo reset
 
 			this.on( "load", function( movie_id ){
-				this.actors.fetch({
-					reset: true,
-					url: "/movie/" + movie_id + "/actor_list",
-					//url: "movie" + movie_id + "actorlist",
-					success: function( actors, resp, options ){
-						actors.movie_id = movie_id
-						$('a#' + movie_id, '#my-movie-list').closest('.my-movie-view')
-							.siblings().removeClass('selected').end()
-							.addClass('selected')
-					} // success
-				})
+				if( this.actors.movie_id != movie_id ){
+					this.actors.fetch({
+						reset: true,
+						url: "/movie/" + movie_id + "/actor_list",
+						success: function( actors, resp, options ){
+							actors.movie_id = movie_id
+						} // success
+					})
+				} else {
+					// remove highlight
+					$('.my-actor-view', '#my-actor-list').removeClass('selected')
+				}
+				// update selection highlight
+				$('a#' + movie_id, '#my-movie-list').closest('.my-movie-view')
+					.siblings().removeClass('selected').end()
+					.addClass('selected')
 			}) // on load_movie
 		} // initialize
 	}) // actor_list_view
@@ -155,6 +160,9 @@ function toggle_my_source(){
 							movies.actor_id = actor_id
 						} // success
 					})
+				} else {
+					// remove highlight
+					$('.my-movie-view', '#my-movie-list').removeClass('selected')
 				}
 				// update selection highlight
 				$('a#' + actor_id, '#my-actor-list').closest('.my-actor-view')
