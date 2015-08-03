@@ -1,14 +1,26 @@
 
 <header>
 	<h1>Movie Database</h1>
-	<h3>backbone.js / underscore.js / obect-oriented javascript / ajax / json / ruby rails</h3>
+	<h3>backbone.js / obect-oriented javascript / ajax / json </h3>
 </header>
 
 <style>
 #my-app-view ol {
-	background:#eee;
+	background: #eee;
 	display: inline-block; vertical-align:top;
 	padding: 10px 15px 10px 30px;
+}
+#my-app-view li {
+	padding: 5px
+}
+#my-app-view li a {
+	text-decoration: none;
+}
+#my-app-view li.selected a {
+	cursor: default;
+}
+#my-app-view li.selected {
+	background-color: white;
 }
 </style>
 
@@ -25,17 +37,12 @@
 function toggle_my_source(){
 	var $target = $('#my-javascript-source');
 	var is_loaded = $target.text().length;
-	var is_visible = $target.filter(':visible').length;
 	if(is_loaded){
-		if(is_visible){
-			$target.hide();
-		} else {
-			$target.show();
-		}
+		$target[ $target.is(':visible') ? 'hide' : 'show' ]()
 	} else {
-		var $source = $('#my-script-source');
-		var html = $source.html().replace(/\t/g, "    ");
-		$target.text(html);
+		$target.text(
+			$('#my-script-source').html().replace(/\t/g, "    ")
+		);
 	}
 }
 </script>
@@ -44,108 +51,125 @@ function toggle_my_source(){
 <%= javascript_include_tag "backbone" %>
 <script id="my-script-source">
 (function(){
-	/*
-	notes:
-	. in-memory/not-in-DOM .wrap() does not work
-	. object named 'child'
-	. collection-to-view events are more mappable than user-interaction-to-view
-	. line count approximately doubled, 50 to 100
-	*/
-	var movie_anchor_html = '<a href="javascript:void(0)" onclick="handleMovieClick(this)">';
 	var movie_view = Backbone.View.extend({
 		tagName: 'li',
 		className: 'my-movie-view',
 		render: function(){
 			var movie = this.model.attributes;
-			var $html = $(movie_anchor_html).append('<span>' + movie.title + '</span>');
-			return this.$el.append($html).attr({id:movie.id});
-		}
-	})
-	var actor_anchor_html = '<a href="javascript:void(0)" onclick="handleActorClick(this)">';
+			return this.$el.append(
+				$('<a href="#"/>').attr({
+					id: movie.id
+				}).append(
+					movie.title
+				)
+			) // append
+		} // render
+	}) // movie_view
 	var actor_view = Backbone.View.extend({
 		tagName: 'li',
 		className: 'my-actor-view',
 		render: function(){
 			var actor = this.model.attributes;
-			var $html = $(actor_anchor_html).append('<span>' + actor.name + '</span>');
-			return this.$el.append($html).attr({id:actor.id});
-		}
+			return this.$el.append(
+				$('<a href="#"/>').attr({
+					id: actor.id
+				}).append(
+					actor.name
+				)
+			) // append
+		} // render
+	}) // actor_view
+
+	var movie_model = Backbone.Model.extend({})
+	var movie_collection = Backbone.Collection.extend({
+		model: movie_model
 	})
-	var actor_collection = Backbone.Collection.extend({})
+	var actor_model = Backbone.Model.extend({})
+	var actor_collection = Backbone.Collection.extend({
+		model: actor_model
+	})
+
 	var actor_list_view = Backbone.View.extend({
-		el: $('#my-actor-list'),
+		el: '#my-actor-list',
+		events: {
+			"click .my-actor-view a": function( e ){
+				this.my_movie_list_view.trigger( 'load', e.target.id )
+				return false
+			}
+		}, // events
 		initialize: function(models, options){
-			this.collection = new actor_collection(models, options);
-			this.listenTo(this.collection, 'add', function(model, collection, options){
-				this.addOne(model);
-			});
-			this.listenTo(this.collection, 'reset', function(collection, options){
-				this.$el.empty();
-			});
-		},
-		addOne: function(an_actor_model){
-			var v = new actor_view({model: an_actor_model});
-			this.$el.append(v.render());
-		}
-	})
-	var movie_collection = Backbone.Collection.extend({})
+			this.actors = new actor_collection
+			this.listenTo( this.actors, 'reset', function( actors, options ){
+				this.$el.empty().append(
+					actors.map( function( actor ){
+						return ( new actor_view({ model: actor }) ).render()
+					})
+				)
+			}) // listenTo reset
+
+			this.on( "load", function( movie_id ){
+				this.actors.fetch({
+					reset: true,
+					url: "/movie/" + movie_id + "/actor_list",
+					//url: "movie" + movie_id + "actorlist",
+					success: function( actors, resp, options ){
+						actors.movie_id = movie_id
+						$('a#' + movie_id, '#my-movie-list').closest('.my-movie-view')
+							.siblings().removeClass('selected').end()
+							.addClass('selected')
+					} // success
+				})
+			}) // on load_movie
+		} // initialize
+	}) // actor_list_view
+
 	var movie_list_view = Backbone.View.extend({
-		el: $('#my-movie-list'),
-		initialize: function(models, options){
-			this.collection = new movie_collection(models, options);
-			this.listenTo(this.collection, 'add', function(model, collection, options){
-				this.addOne(model);
-			});
-			this.listenTo(this.collection, 'reset', function(collection, options){
-				this.$el.empty();
-			});
-			this.collection.each(this.addOne, this);
-		},
-		addOne: function(a_movie_model){
-			var v = new movie_view({model: a_movie_model});
-			this.$el.append(v.render());
-		}
-	})
-	var my_actor_list_view = new actor_list_view;
-	var my_movie_list_view = new movie_list_view(<%= raw(@movies.to_json) %>);
-	window.handleMovieClick = function(a){
-		var $selected_li = $(a).closest('li');
-		var movie_id = $selected_li.attr('id');
-		my_actor_list_view.collection.reset().fetch({
-			$selected_li: $selected_li,
-			url: "/movie/" + movie_id + "/actor_list",
-			success: function(collection, resp, options){
-				options.$selected_li.addClass('selected').find('a').children().unwrap();
-				options.$selected_li.siblings().each(function(i, v){
-					var $li = $(v).removeClass('selected');
-					var is_linked = $li.children('a').length;
-					if(!is_linked){
-						$li.children().wrap(movie_anchor_html);
-					}
-				})
+		el: '#my-movie-list',
+		events: {
+			"click .my-movie-view a" : function(e){
+				this.my_actor_list_view.trigger( "load", e.target.id )
+				return false
 			}
-		});
-		return false;
-	}
-	window.handleActorClick = function(a){
-		var $selected_li = $(a).closest('li');
-		var actor_id = $selected_li.attr('id');
-		my_movie_list_view.collection.reset().fetch({
-			$selected_li: $selected_li,
-			url: "/actor/" + actor_id + "/movie_list",
-			success: function(collection, resp, options){
-				options.$selected_li.addClass('selected').find('a').children().unwrap();
-				options.$selected_li.siblings().each(function(i, v){
-					var $li = $(v).removeClass('selected');
-					var is_linked = $li.children('a').length;
-					if(!is_linked){
-						$li.children().wrap(actor_anchor_html);
-					}
-				})
+		}, // events
+		initialize: function(movies, options){
+			// pointn to each other
+			this.my_actor_list_view = options.my_actor_list_view
+			options.my_actor_list_view.my_movie_list_view = this
+
+			this.movies = new movie_collection
+			this.listenTo( this.movies, 'reset', function( movies, options ){
+				this.$el.empty().append(
+					movies.map(function( movie ){
+						return ( new movie_view({ model: movie }) ).render()
+					})
+				)
+			}) // listenTo reset
+			this.movies.reset( movies )
+				
+			this.on( "load", function( actor_id ){
+				if( this.movies.actor_id != actor_id ){
+					this.movies.fetch({
+						reset: true,
+						url: "/actor/" + actor_id + "/movie_list",
+						success: function( movies, resp, options ){
+							movies.actor_id = actor_id
+						} // success
+					})
+				}
+				// update selection highlight
+				$('a#' + actor_id, '#my-actor-list').closest('.my-actor-view')
+					.siblings().removeClass('selected').end()
+					.addClass('selected')
+			}) // on load
+		} // initialize
+	}) // movie_list_view
+	
+	var my_movie_list_view = new movie_list_view(
+			<%= raw(@movies.to_json) %>, {
+				my_actor_list_view: new actor_list_view
 			}
-		});
-		return false;
-	}
+	)
+
 	$('#my-movie-list li a').eq(0).click();  // select first one
 })()
 </script>
