@@ -1,168 +1,253 @@
 
 <header>
 	<h1>Movie Database</h1>
-	<h3>backbone / mvc / json api</h3>
+	<h3>angular vs backbone / mvc / json api</h3>
 </header>
 
 <style>
-#my-app-view ol {
+ul { padding: 0}
+.app-view ol {
 	background: #eee;
 	display: inline-block; vertical-align:top;
 	padding: 10px 15px 10px 30px;
 }
-#my-app-view li {
+.app-view li {
 	padding: 5px
 }
-#my-app-view li a {
+.app-view li a {
 	text-decoration: none;
 }
-#my-app-view li.selected a {
+.app-view li.selected a {
 	cursor: default;
 }
-#my-app-view li.selected {
+.app-view li.selected {
 	background-color: white; border: 1px solid #ccc;
 }
+a.my-source { display: block; margin-bottom: 10px }
 </style>
 
-<div id="my-app-view">
-	<ol id="my-movie-list"></ol>
-	<ol id="my-actor-list" style="margin-left:20px"></ol>
-</div>
+<ul>
+<li class="ng app-view"><h3>angular</h3>
+  <ol class="my-movie-list" ng-controller="movieCtrl">
+	<li ng-repeat="movie in movies" ng-attr-id="{{movie.id}}" ng-class="{selected: movie.id == selectedMovieId}">
+	  <a href="#" ng-click="selectMovie(movie.id)">{{movie.title}}</a>
+  </ol>
+  <ol class="my-actor-list" ng-controller="actorCtrl" style="margin-left:20px">
+	<li ng-repeat="actor in actors" ng-attr-id="{{actor.id}}" ng-class="{selected: actor.id == selectedActorId}">
+	  <a href="#" ng-click="selectActor(actor.id)">{{actor.name}}</a>
+  </ol>
 
-<a href="javascript:void(0)" onclick="toggle_my_source()">
-	javascript source
-</a>
-<pre id="my-javascript-source" style="background:#eee"></pre>
+	<a class="my-source" href="javascript:void(0)" onclick="toggle_source(this)">
+	  javascript source
+	</a>
+	<pre class="my-source" style="background:#eee"></pre>
+
+	<%= javascript_include_tag "angular" %>
+	<%= javascript_include_tag "angular-resource" %>
+<script class="my-source">
+(function(){	
+	"use strict"	
+	angular.module( 'myApp', [ 'ngResource' ] )
+		.factory( 'mycommSvc', [function(){
+			return {}
+		}])
+		.controller( 'movieCtrl', [ '$scope', '$resource', 'mycommSvc', function( $scope , $resource, mycommSvc ){
+			var movie_res = $resource(
+				'actor/:actor_id/movie_list.json',
+				{},
+				{ queryAll: { url: 'all_movies.json', isArray: true }}
+			)
+			mycommSvc.selectActor = $scope.loadMovies = function( actor_id ){
+				return movie_res[
+					actor_id ? 'query' : 'queryAll'
+				]({ actor_id: actor_id } , function( movies ) {
+					$scope.selectedMovieId = null
+					$scope.movies = movies
+					mycommSvc.setSelectedActorId( actor_id )
+				})
+			} // loadMovies
+			mycommSvc.setSelectedMovieId = function( movie_id ){
+				$scope.selectedMovieId = movie_id
+			}
+			$scope.selectMovie= function( movie_id ){
+				event.preventDefault() // otherwise '#' scrolls to top
+				mycommSvc.selectMovie( movie_id )
+			}
+			$scope.loadMovies().$promise.then(function( movies ){ // default selection
+				if( movies.length ){
+					mycommSvc.selectMovie( movies[0].id )
+				}
+			})
+		}])
+		.controller( 'actorCtrl', [ '$scope', '$resource', 'mycommSvc', function( $scope, $resource, mycommSvc ){
+			var actor_res = $resource(
+				'movie/:movie_id/actor_list.json'
+			)
+			mycommSvc.selectMovie = $scope.loadActors = function( movie_id ){
+				return actor_res.query({ movie_id: movie_id }, function( actors ){
+					$scope.selectedActorId = null
+					$scope.actors = actors
+					mycommSvc.setSelectedMovieId( movie_id )
+				})
+			}
+			$scope.selectActor = function( actor_id ){
+				event.preventDefault() // otherwise '#' scrolls to top
+				mycommSvc.selectActor( actor_id )
+			}
+			mycommSvc.setSelectedActorId = function( actor_id ){
+				$scope.selectedActorId = actor_id
+			}
+		}])
+
+	angular.bootstrap( '.ng.app-view', [ 'myApp' ], {
+		strictDi: true
+	})
+})()
+</script>
+
+<li class="bb app-view"><h3>backbone</h3>
+	<ol class="my-movie-list"></ol>
+	<ol class="my-actor-list" style="margin-left:20px"></ol>
+
+	<a class="my-source" href="javascript:void(0)" onclick="toggle_source(this)">
+	  javascript source
+	</a>
+	<pre class="my-source" style="background:#eee"></pre>
+
+	<%= javascript_include_tag "underscore" %>
+	<%= javascript_include_tag "backbone" %>
+	<script class="my-source">
+	( function(){
+		"use strict"
+		var actor_model = Backbone.Model.extend({})
+		var actor_collection = Backbone.Collection.extend({
+			model: actor_model
+		})
+		var movie_model = Backbone.Model.extend({})
+		var movie_collection = Backbone.Collection.extend({
+			model: movie_model
+		})
+
+		var actor_view = Backbone.View.extend({
+			tagName: 'li',
+			className: 'my-actor-view',
+			render: function(){
+				var actor = this.model.attributes
+				return this.$el.attr({
+					id: actor.id
+				}).append(
+					$('<a href="#"/>').append( actor.name )
+				) // return
+			} // render
+		}) // actor_view
+		var movie_view = Backbone.View.extend({
+			tagName: 'li',
+			className: 'my-movie-view',
+			render: function(){
+				var movie = this.model.attributes;
+				return this.$el.attr({
+					id: movie.id
+				}).append(
+					$('<a href="#"/>').append(
+						movie.title
+					)
+				) // return
+			} // render
+		}) // movie_view
+		
+		var actors = new actor_collection // visible to both movies & actors views
+		var actor_list_view = Backbone.View.extend({
+			el: '.bb.app-view ol.my-actor-list',
+			events: {
+				"click .my-actor-view": function( e ){
+					my_movie_list_view.myload( e.currentTarget.id )
+					return false
+				}
+			},
+			initialize: function( options ){
+				this.listenTo( actors, 'reset', function( actors, options ){
+					this.$el.empty().append(
+						actors.map( function( actor ){
+							return ( new actor_view({ model: actor }) ).render()
+						})
+					)
+				})
+				this.listenTo( movies, "change:actor_id", function( actor_id){
+					$('> li#' + actor_id, this.el)
+						.siblings().removeClass('selected').end()
+						.addClass('selected')
+				})
+				this.myload = function( movie_id ){
+					return actors.fetch({
+						reset: true,
+ 						url: "/movie/" + movie_id + "/actor_list",
+						success: function( actors, resp, options ){
+							actors.trigger('change:movie_id', actors.movie_id = movie_id )
+						}
+					})
+				} // myload
+			} // initialize
+		}) // actor_list_view
+
+		var movies = new movie_collection // visible to both (movies & actors) views
+		var movie_list_view = Backbone.View.extend({
+			el: '.bb.app-view ol.my-movie-list',
+			events: {
+				"click .my-movie-view" : function(e){
+					my_actor_list_view.myload( e.currentTarget.id );
+					return false
+				}
+			}, // events
+			initialize: function( options ){
+				this.listenTo( movies, 'reset', function( movies, options ){
+					this.$el.empty().append(
+						movies.map(function( movie ){
+							return ( new movie_view({ model: movie }) ).render()
+						})
+					)
+				})
+				this.listenTo( actors, 'change:movie_id', function( movie_id ){
+					$('> li#' + movie_id, this.el)
+						.siblings().removeClass('selected').end()
+						.addClass('selected')
+				})
+				this.myload = function( actor_id ){
+					return movies.fetch({
+						reset: true,
+						url: actor_id ? (
+							"/actor/" + actor_id + "/movie_list"
+						) : 'all_movies',
+						success: function( movies, resp, options ){
+							movies.trigger(
+								'change:actor_id', movies.actor_id = actor_id
+							)
+						}
+					})
+				}
+				this.myload().done(function( movies ){ // default selection
+					$('ol.my-movie-list > li > a', '.bb.app-view' ).eq(0).click()
+				})
+			} // initialize
+		}) // movie_list_view
+		var my_movie_list_view = new movie_list_view
+		var my_actor_list_view = new actor_list_view
+	})()
+	</script>
+
+</ul>
+
 <script>
-function toggle_my_source(){
-	var $target = $('#my-javascript-source');
+function toggle_source( el ){
+	var $target = $(el).siblings('pre.my-source')
 	var is_loaded = $target.text().length;
 	if(is_loaded){
 		$target[ $target.is(':visible') ? 'hide' : 'show' ]()
 	} else {
+		var $source = $(el).siblings('script.my-source')
 		$target.text(
-			$('#my-script-source').html().replace(/\t/g, "    ")
+			$source.text().replace(/\t/g, "    ")
 		);
 	}
-}
+} // toggle_source
 </script>
 
-<%= javascript_include_tag "underscore" %>
-<%= javascript_include_tag "backbone" %>
-<script id="my-script-source">
-( function(){
-	"use strict"
-	var actor_model = Backbone.Model.extend({})
-	var actor_collection = Backbone.Collection.extend({
-		model: actor_model
-	})
-
-	var movie_model = Backbone.Model.extend({})
-	var movie_collection = Backbone.Collection.extend({
-		model: movie_model
-	})
-
-	var actor_view = Backbone.View.extend({
-		tagName: 'li',
-		className: 'my-actor-view',
-		render: function(){
-			var actor = this.model.attributes
-			return this.$el.attr({
-				id: actor.id
-			}).append(
-				$('<a href="#"/>').append( actor.name )
-			) // return
-		} // render
-	}) // actor_view
-	
-	var movie_view = Backbone.View.extend({
-		tagName: 'li',
-		className: 'my-movie-view',
-		render: function(){
-			var movie = this.model.attributes;
-			return this.$el.attr({
-				id: movie.id
-			}).append(
-				$('<a href="#"/>').append(
-					movie.title
-				)
-			) // return
-		} // render
-	}) // movie_view
-	
-	var actors = new actor_collection // visible to both movies & actors views
-	var actor_list_view = Backbone.View.extend({
-		el: 'ol#my-actor-list',
-		events: {
-			"click .my-actor-view": function( e ){
-				my_movie_list_view.load( e.currentTarget.id )
-			}
-		},
-		initialize: function( options ){
-			this.listenTo( actors, 'reset', function( actors, options ){
-				this.$el.empty().append(
-					actors.map( function( actor ){
-						return ( new actor_view({ model: actor }) ).render()
-					})
-				)
-			})
-			this.listenTo( movies, "change:actor_id", function( actor_id){
-				$('> li#' + actor_id, this.el)
-					.siblings().removeClass('selected').end()
-					.addClass('selected')
-			})
-			this.load = function( movie_id ){
-				return actors.fetch({
-					reset: true,
- 					url: "/movie/" + movie_id + "/actor_list",
-					success: function( actors, resp, options ){
-						actors.trigger('change:movie_id', actors.movie_id = movie_id )
-					}
-				})
-			} // load
-		} // initialize
-	}) // actor_list_view
-
-	var movies = new movie_collection // visible to both (movies & actors) views
-	var movie_list_view = Backbone.View.extend({
-		el: 'ol#my-movie-list',
-		events: {
-			"click .my-movie-view" : function(e){
-				my_actor_list_view.load( e.currentTarget.id );
-			}
-		}, // events
-		initialize: function( options ){
-			this.listenTo( movies, 'reset', function( movies, options ){
-				this.$el.empty().append(
-					movies.map(function( movie ){
-						return ( new movie_view({ model: movie }) ).render()
-					})
-				)
-			})
-			this.listenTo( actors, 'change:movie_id', function( movie_id ){
-				$('> li#' + movie_id, this.el)
-					.siblings().removeClass('selected').end()
-					.addClass('selected')
-			})
-			this.load = function( actor_id ){
-				return movies.fetch({
-					reset: true,
-					url: actor_id ? (
-						"/actor/" + actor_id + "/movie_list"
-					) : 'all_movies',
-					success: function( movies, resp, options ){
-						movies.trigger(
-							'change:actor_id', movies.actor_id = actor_id
-						)
-					}
-				})
-			}
-			this.load().done(function(){
-				$('> li > a', '#my-movie-list').eq(0).click() // default
-			})
-		} // initialize
-	}) // movie_list_view
-	var my_movie_list_view = new movie_list_view
-	var my_actor_list_view = new actor_list_view
-})()
-</script>
